@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Suite — Voyago</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Jost',sans-serif;background:#f4f3ef;color:#2c2c2c;font-size:14px;line-height:1.5;}
+:root{--gold:#c9a96e;--gold-light:#e8d5b0;--navy:#18202e;--cream:#faf8f4;--bg:#f4f3ef;--white:#ffffff;--border:#e8e3da;--text:#2c2c2c;--muted:#8a8578;--red:#e74c3c;--green:#27ae60;--blue:#2980b9;--orange:#e67e22;}
+input,select,textarea,button{font-family:'Jost',sans-serif;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState, useEffect, useRef, useCallback} = React;
+
+// ── MOCK DATA ──────────────────────────────────────────
+const INITIAL_LEADS = [
+  {id:1, nome:'Ana Paula Santos', email:'ana@email.com', tel:'+55 11 99999-0001', destino:'Maldivas', tipo:'Lua de mel', budget:'R$ 45.000', data:'2026-04-24', etapa:'Completo', status:'Ganho', origem:'Landing Page'},
+  {id:2, nome:'Família Costa', email:'costa@familia.com', tel:'+55 11 99999-0002', destino:'Bali', tipo:'Família', budget:'R$ 38.000', data:'2026-04-23', etapa:'Completo', status:'Proposta', origem:'Instagram'},
+  {id:3, nome:'Roberto Almeida', email:'rob@empresa.com', tel:'+55 11 99999-0003', destino:'Japão', tipo:'Ocasião especial', budget:'R$ 60.000', data:'2026-04-22', etapa:'Completo', status:'Ganho', origem:'Indicação'},
+  {id:4, nome:'Mariana Oliveira', email:'mari@email.com', tel:'', destino:'', tipo:'', budget:'', data:'2026-04-21', etapa:'Parcial', status:'Novo', origem:'Landing Page'},
+  {id:5, nome:'Carlos Mendes', email:'carlos@email.com', tel:'+55 21 98888-0001', destino:'Paris', tipo:'Lua de mel', budget:'R$ 28.000', data:'2026-04-20', etapa:'Completo', status:'Contactado', origem:'Google Ads'},
+  {id:6, nome:'Sofia Lima', email:'sofia@email.com', tel:'+55 11 97777-0001', destino:'Santorini', tipo:'Família', budget:'R$ 52.000', data:'2026-04-19', etapa:'Completo', status:'Proposta', origem:'Landing Page'},
+  {id:7, nome:'Teste Lead', email:'teste@teste.com', tel:'', destino:'', tipo:'', budget:'', data:'2026-04-18', etapa:'Parcial', status:'Novo', origem:'Landing Page'},
+  {id:8, nome:'João Pereira', email:'joao@email.com', tel:'+55 11 96666-0001', destino:'Dubai', tipo:'Ocasião especial', budget:'R$ 75.000', data:'2026-04-17', etapa:'Completo', status:'Perdido', origem:'Facebook'},
+];
+
+const INITIAL_GUIAS = [
+  {id:1, cidade:'Lisboa', pais:'Portugal', continente:'Europa', tema:'Cidade', badge:'Bestseller', preco:19.90, ativo:true, img:'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=80&q=70', ordem:1},
+  {id:2, cidade:'Paris', pais:'França', continente:'Europa', tema:'Romântico', badge:'Popular', preco:24.90, ativo:true, img:'https://images.unsplash.com/photo-1431274172761-fcdab704a698?w=80&q=70', ordem:2},
+  {id:3, cidade:'Roma', pais:'Itália', continente:'Europa', tema:'Cultural', badge:'Novo', preco:22.90, ativo:true, img:'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=80&q=70', ordem:3},
+  {id:4, cidade:'Barcelona', pais:'Espanha', continente:'Europa', tema:'Cidade', badge:'Popular', preco:21.90, ativo:true, img:'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=80&q=70', ordem:4},
+  {id:5, cidade:'Dubai', pais:'EAU', continente:'Ásia', tema:'Aventura', badge:'Premium', preco:27.90, ativo:true, img:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=80&q=70', ordem:5},
+  {id:6, cidade:'Tóquio', pais:'Japão', continente:'Ásia', tema:'Cultural', badge:'Premium', preco:29.90, ativo:true, img:'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=80&q=70', ordem:6},
+  {id:7, cidade:'Nova Iorque', pais:'EUA', continente:'América', tema:'Cidade', badge:'Bestseller', preco:24.90, ativo:true, img:'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=80&q=70', ordem:7},
+  {id:8, cidade:'Santorini', pais:'Grécia', continente:'Europa', tema:'Praia', badge:'Novo', preco:22.90, ativo:false, img:'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=80&q=70', ordem:8},
+  {id:9, cidade:'Veneza', pais:'Itália', continente:'Europa', tema:'Cidade', badge:'Popular', preco:19.90, ativo:true, img:'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=80&q=70', ordem:9},
+];
+
+const USERS = [
+  {id:1, email:'admin@voyago.com.br', nome:'Carla Mendonça', role:'admin', estado:'Ativo', criado:'18 abr 2026'},
+  {id:2, email:'assistente@voyago.com.br', nome:'Daniela Martins', role:'user', estado:'Ativo', criado:'21 abr 2026'},
+];
+
+const PIPELINE_DATA = {
+  Novo: [{id:1,nome:'Mariana Oliveira',email:'mari@email.com',tel:'',destino:'',data:'24 abr'},{id:7,nome:'Teste Lead',email:'teste@teste.com',tel:'',destino:'',data:'22 abr'}],
+  Contactado: [{id:5,nome:'Carlos Mendes',email:'carlos@email.com',tel:'+55 21 98888-0001',destino:'Paris',data:'20 abr'}],
+  Proposta: [{id:2,nome:'Família Costa',email:'costa@familia.com',tel:'+55 11 99999-0002',destino:'Bali',data:'19 abr'},{id:6,nome:'Sofia Lima',email:'sofia@email.com',tel:'+55 11 97777-0001',destino:'Santorini',data:'17 abr'}],
+  Ganho: [{id:1,nome:'Ana Paula Santos',email:'ana@email.com',tel:'+55 11 99999-0001',destino:'Maldivas',data:'15 abr'},{id:3,nome:'Roberto Almeida',email:'rob@empresa.com',tel:'+55 11 99999-0003',destino:'Japão',data:'10 abr'}],
+  Perdido: [{id:8,nome:'João Pereira',email:'joao@email.com',tel:'+55 11 96666-0001',destino:'Dubai',data:'8 abr'}],
+};
+
+// ── STYLES ────────────────────────────────────────────
+const adminStyles = {
+  // Layout
+  layout:{display:'flex',height:'100vh',overflow:'hidden'},
+  sidebar:{width:200,background:COLORS_WHITE,borderRight:'1px solid #e8e3da',display:'flex',flexDirection:'column',flexShrink:0,overflowY:'auto'},
+  main:{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'},
+  header:{height:56,background:'#fff',borderBottom:'1px solid #e8e3da',display:'flex',alignItems:'center',padding:'0 28px',gap:16,flexShrink:0},
+  content:{flex:1,overflowY:'auto',padding:28,background:'#f4f3ef'},
+
+  // Sidebar
+  sidebarBrand:{padding:'20px 20px 8px',borderBottom:'1px solid #e8e3da'},
+  sidebarLogo:{fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:400,color:'#18202e',letterSpacing:'0.02em'},
+  sidebarLogoEm:{fontStyle:'italic',color:'#c9a96e'},
+  sidebarSub:{fontSize:10,color:'#8a8578',letterSpacing:'0.12em',textTransform:'uppercase',marginTop:2},
+  sidebarSection:{padding:'16px 16px 4px',fontSize:9,fontWeight:600,letterSpacing:'0.18em',textTransform:'uppercase',color:'#b0a898'},
+  sidebarNav:{padding:'0 8px'},
+  navItem:{display:'flex',alignItems:'center',gap:10,padding:'8px 12px',borderRadius:6,cursor:'pointer',fontSize:13,fontWeight:400,color:'#5a5449',transition:'all 0.15s',marginBottom:1},
+  navItemActive:{background:'rgba(201,169,110,0.12)',color:'#c9a96e',fontWeight:500},
+
+  // Header
+  searchBar:{flex:1,maxWidth:340,display:'flex',alignItems:'center',gap:8,background:'#f4f3ef',border:'1px solid #e8e3da',borderRadius:6,padding:'6px 12px'},
+  searchInput:{background:'none',border:'none',outline:'none',fontSize:13,color:'#2c2c2c',width:'100%'},
+  iconBtn:{background:'none',border:'none',cursor:'pointer',padding:6,borderRadius:6,color:'#8a8578',position:'relative',display:'flex',alignItems:'center'},
+  userChip:{display:'flex',alignItems:'center',gap:8,fontSize:12},
+  userEmail:{color:'#5a5449'},
+  userRole:{fontSize:10,color:'#b0a898'},
+
+  // Cards
+  card:{background:'#fff',borderRadius:10,padding:'20px 24px',border:'1px solid #ece8e0'},
+  kpiCard:{background:'#fff',borderRadius:10,padding:'18px 22px',border:'1px solid #ece8e0',position:'relative'},
+  kpiNum:{fontFamily:"'Cormorant Garamond',serif",fontSize:36,fontWeight:400,color:'#18202e',lineHeight:1.1},
+  kpiLabel:{fontSize:11,color:'#8a8578',letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:8},
+  kpiDelta:{fontSize:12,marginTop:6,display:'flex',alignItems:'center',gap:4},
+
+  // Tables
+  table:{width:'100%',borderCollapse:'collapse'},
+  th:{fontSize:10,fontWeight:600,letterSpacing:'0.12em',textTransform:'uppercase',color:'#8a8578',padding:'10px 14px',textAlign:'left',borderBottom:'1px solid #e8e3da',background:'#faf8f4'},
+  td:{padding:'11px 14px',borderBottom:'1px solid #f0ece4',fontSize:13,color:'#2c2c2c',verticalAlign:'middle'},
+  tdMuted:{padding:'11px 14px',borderBottom:'1px solid #f0ece4',fontSize:12,color:'#8a8578',verticalAlign:'middle'},
+
+  // Badges
+  badge:{display:'inline-flex',alignItems:'center',padding:'3px 10px',borderRadius:100,fontSize:11,fontWeight:500,letterSpacing:'0.05em'},
+
+  // Buttons
+  btnPrimary:{background:'#c9a96e',color:'#18202e',border:'none',padding:'9px 18px',borderRadius:6,fontSize:12,fontWeight:600,letterSpacing:'0.08em',cursor:'pointer',display:'inline-flex',alignItems:'center',gap:7},
+  btnSecondary:{background:'none',color:'#5a5449',border:'1px solid #e8e3da',padding:'8px 16px',borderRadius:6,fontSize:12,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:7},
+  btnDanger:{background:'none',color:'#e74c3c',border:'none',cursor:'pointer',padding:4,borderRadius:4},
+
+  // Form
+  formGroup:{marginBottom:16},
+  label:{display:'block',fontSize:10,fontWeight:600,letterSpacing:'0.12em',textTransform:'uppercase',color:'#8a8578',marginBottom:6},
+  input:{width:'100%',border:'1px solid #e8e3da',borderRadius:6,padding:'9px 12px',fontSize:13,outline:'none',background:'#faf8f4',color:'#2c2c2c'},
+  select:{width:'100%',border:'1px solid #e8e3da',borderRadius:6,padding:'9px 12px',fontSize:13,outline:'none',background:'#faf8f4',color:'#2c2c2c',appearance:'none'},
+  textarea:{width:'100%',border:'1px solid #e8e3da',borderRadius:6,padding:'9px 12px',fontSize:13,outline:'none',background:'#faf8f4',color:'#2c2c2c',resize:'vertical',minHeight:80},
+
+  // Modal
+  modalOverlay:{position:'fixed',inset:0,background:'rgba(0,0,0,0.45)',zIndex:1000,display:'flex',alignItems:'flex-start',justifyContent:'flex-end'},
+  modalPanel:{background:'#fff',width:440,height:'100vh',overflowY:'auto',padding:32,boxShadow:'-8px 0 40px rgba(0,0,0,0.12)'},
+  modalTitle:{fontFamily:"'Cormorant Garamond',serif",fontSize:26,fontWeight:400,color:'#18202e',marginBottom:6},
+
+  // Toggle
+  toggle:{position:'relative',display:'inline-block',width:36,height:20},
+  toggleInput:{opacity:0,width:0,height:0,position:'absolute'},
+  toggleSlider:{position:'absolute',cursor:'pointer',inset:0,background:'#e8e3da',borderRadius:10,transition:'0.3s'},
+  toggleSliderOn:{background:'#c9a96e'},
+  toggleKnob:{position:'absolute',height:14,width:14,left:3,bottom:3,background:'#fff',borderRadius:50,transition:'0.3s'},
+  toggleKnobOn:{transform:'translateX(16px)'},
+};
+
+const COLORS_WHITE = '#ffffff';
+
+// ── HELPERS ───────────────────────────────────────────
+function Badge({status}){
+  const map={
+    Novo:{bg:'#edf6f9',color:'#2980b9'},
+    Contactado:{bg:'#fef9ec',color:'#c9a96e'},
+    Proposta:{bg:'#fff3e0',color:'#e67e22'},
+    Ganho:{bg:'#eafaf1',color:'#27ae60'},
+    Perdido:{bg:'#fdf0ef',color:'#e74c3c'},
+    Parcial:{bg:'#f0ece4',color:'#8a8578'},
+    Completo:{bg:'rgba(201,169,110,0.2)',color:'#c9a96e'},
+    Bestseller:{bg:'rgba(201,169,110,0.9)',color:'#18202e'},
+    Popular:{bg:'rgba(201,169,110,0.7)',color:'#18202e'},
+    Novo2:{bg:'rgba(39,174,96,0.15)',color:'#27ae60'},
+    Premium:{bg:'rgba(24,32,46,0.85)',color:'#c9a96e'},
+    admin:{bg:'rgba(201,169,110,0.2)',color:'#c9a96e'},
+    user:{bg:'#f0ece4',color:'#8a8578'},
+    Ativo:{bg:'#eafaf1',color:'#27ae60'},
+    Inativo:{bg:'#fdf0ef',color:'#e74c3c'},
+  };
+  const s=map[status]||{bg:'#f0f0f0',color:'#666'};
+  return <span style={{...adminStyles.badge,background:s.bg,color:s.color}}>{status}</span>;
+}
+
+function Toggle({on, onChange}){
+  return (
+    <label style={adminStyles.toggle} onClick={e=>e.stopPropagation()}>
+      <input type="checkbox" checked={on} onChange={onChange} style={adminStyles.toggleInput}/>
+      <span style={{...adminStyles.toggleSlider,...(on?adminStyles.toggleSliderOn:{})}}>
+        <span style={{...adminStyles.toggleKnob,...(on?adminStyles.toggleKnobOn:{})}}></span>
+      </span>
+    </label>
+  );
+}
+
+function Icon({name,size=16,color='currentColor'}){
+  const icons={
+    dashboard:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>,
+    leads:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
+    clients:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    pipeline:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>,
+    packages:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>,
+    guides:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>,
+    revenue:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>,
+    analytics:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+    monitoring:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>,
+    alerts:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>,
+    reports:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>,
+    integrations:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>,
+    users:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
+    settings:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>,
+    search:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+    bell:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>,
+    logout:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>,
+    plus:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+    edit:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+    trash:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>,
+    eye:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
+    export:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>,
+    arrowup:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5"><polyline points="18 15 12 9 6 15"/></svg>,
+    arrowdown:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>,
+    x:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+    lock:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
+    check:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>,
+    drag:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><circle cx="9" cy="5" r="1" fill={color}/><circle cx="9" cy="12" r="1" fill={color}/><circle cx="9" cy="19" r="1" fill={color}/><circle cx="15" cy="5" r="1" fill={color}/><circle cx="15" cy="12" r="1" fill={color}/><circle cx="15" cy="19" r="1" fill={color}/></svg>,
+    globe:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>,
+    trend:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
+    invite:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>,
+    more:<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"><circle cx="12" cy="5" r="1" fill={color}/><circle cx="12" cy="12" r="1" fill={color}/><circle cx="12" cy="19" r="1" fill={color}/></svg>,
+  };
+  return icons[name]||<span style={{width:size,height:size,display:'inline-block'}}/>;
+}
+
+// ── LINE CHART ──────────────────────────────────────────
+function LineChart({data, color='#c9a96e', color2='#18202e', h=160}){
+  const w=560, pad=32;
+  const maxY=Math.max(...data.map(d=>Math.max(d.qualificados||0,d.parciais||0)),1);
+  const pts1=data.map((d,i)=>{
+    const x=pad+(i/(data.length-1))*(w-pad*2);
+    const y=h-pad-(d.qualificados/maxY)*(h-pad*2);
+    return `${x},${y}`;
+  }).join(' ');
+  const pts2=data.map((d,i)=>{
+    const x=pad+(i/(data.length-1))*(w-pad*2);
+    const y=h-pad-(d.parciais/maxY)*(h-pad*2);
+    return `${x},${y}`;
+  }).join(' ');
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} style={{width:'100%',height:h}}>
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity=".2"/><stop offset="100%" stopColor={color} stopOpacity="0"/></linearGradient>
+      </defs>
+      {[0,0.25,0.5,0.75,1].map((t,i)=>(
+        <line key={i} x1={pad} y1={h-pad-t*(h-pad*2)} x2={w-pad} y2={h-pad-t*(h-pad*2)} stroke="#e8e3da" strokeWidth="1"/>
+      ))}
+      {data.map((d,i)=>{
+        const x=pad+(i/(data.length-1))*(w-pad*2);
+        return <text key={i} x={x} y={h-6} textAnchor="middle" fontSize={9} fill="#b0a898">{d.label}</text>;
+      })}
+      <polygon points={`${pad},${h-pad} ${pts1} ${w-pad},${h-pad}`} fill="url(#g1)"/>
+      <polyline points={pts1} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round"/>
+      <polyline points={pts2} fill="none" stroke={color2} strokeWidth="1.5" strokeLinejoin="round" strokeDasharray="4,3"/>
+      {data.map((d,i)=>{
+        const x=pad+(i/(data.length-1))*(w-pad*2);
+        const y=h-pad-(d.qualificados/maxY)*(h-pad*2);
+        return <circle key={i} cx={x} cy={y} r="3" fill={color} stroke="#fff" strokeWidth="1.5"/>;
+      })}
+    </svg>
+  );
+}
+
+// ── BAR CHART ───────────────────────────────────────────
+function BarChart({data, color='#c9a96e'}){
+  const max=Math.max(...data.map(d=>d.val),1);
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:10}}>
+      {data.map((d,i)=>(
+        <div key={i} style={{display:'flex',alignItems:'center',gap:12}}>
+          <span style={{fontSize:11,color:'#8a8578',width:90,flexShrink:0}}>{d.label}</span>
+          <div style={{flex:1,background:'#f0ece4',borderRadius:3,height:10,overflow:'hidden'}}>
+            <div style={{width:`${(d.val/max)*100}%`,background:color,height:'100%',borderRadius:3,transition:'width 0.8s ease'}}/>
+          </div>
+          <span style={{fontSize:11,color:'#5a5449',width:24,textAlign:'right'}}>{d.val}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── MINI SPARKLINE ──────────────────────────────────────
+function Sparkline({data,color='#c9a96e'}){
+  const w=60,h=28,pad=4;
+  const max=Math.max(...data,1);
+  const pts=data.map((v,i)=>{
+    const x=pad+(i/(data.length-1))*(w-pad*2);
+    const y=h-pad-(v/max)*(h-pad*2);
+    return `${x},${y}`;
+  }).join(' ');
+  return <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}><polyline points={pts} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round"/></svg>;
+}
+
+// ── LOGIN PAGE ─────────────────────────────────────────
+function LoginPage({onLogin}){
+  const [email,setEmail]=useState('admin@voyago.com.br');
+  const [pass,setPass]=useState('');
+  const [err,setErr]=useState('');
+  const handle=e=>{
+    e.preventDefault();
+    if(email&&pass.length>=4){onLogin({email,role:'Administrador'});}
+    else setErr('Credenciais inválidas. Use qualquer email e senha com 4+ caracteres.');
+  };
+  return (
+    <div style={{minHeight:'100vh',background:'#111720',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <div style={{background:'#fff',borderRadius:12,padding:'40px 44px',width:480,boxShadow:'0 24px 64px rgba(0,0,0,0.25)'}}>
+        <div style={{textAlign:'center',marginBottom:32}}>
+          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e'}}>Painel <span style={{fontStyle:'italic',color:'#c9a96e'}}>Admin</span></div>
+          <div style={{fontSize:13,color:'#8a8578',marginTop:4}}>Entre na sua conta</div>
+        </div>
+        <form onSubmit={handle}>
+          <div style={adminStyles.formGroup}>
+            <label style={adminStyles.label}>Email</label>
+            <input style={adminStyles.input} type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="admin@voyago.com.br"/>
+          </div>
+          <div style={adminStyles.formGroup}>
+            <label style={adminStyles.label}>Password</label>
+            <input style={adminStyles.input} type="password" value={pass} onChange={e=>{setPass(e.target.value);setErr('');}} placeholder="••••••••"/>
+          </div>
+          {err&&<div style={{color:'#e74c3c',fontSize:12,marginBottom:12}}>{err}</div>}
+          <button type="submit" style={{...adminStyles.btnPrimary,width:'100%',justifyContent:'center',padding:'12px',fontSize:13,marginTop:4}}>Entrar</button>
+          <div style={{textAlign:'center',marginTop:16,fontSize:12,color:'#8a8578'}}>
+            <a href="#" style={{color:'#c9a96e',textDecoration:'none'}}>Não tem conta? Criar agora</a>
+          </div>
+          <div style={{textAlign:'center',marginTop:10,fontSize:11,color:'#b0a898'}}>A primeira conta criada torna-se automaticamente administradora.</div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ── SIDEBAR ────────────────────────────────────────────
+function Sidebar({page,setPage,collapsed}){
+  const groups=[
+    {label:'Operação',items:[
+      {key:'dashboard',icon:'dashboard',label:'Dashboard'},
+      {key:'leads',icon:'leads',label:'Leads'},
+      {key:'clientes',icon:'clients',label:'Clientes'},
+      {key:'pipeline',icon:'pipeline',label:'Pipeline'},
+    ]},
+    {label:'Produtos',items:[
+      {key:'pacotes',icon:'packages',label:'Pacotes'},
+      {key:'guias',icon:'guides',label:'Guias / Produtos'},
+    ]},
+    {label:'Análise',items:[
+      {key:'receita',icon:'revenue',label:'Receita'},
+      {key:'analytics',icon:'analytics',label:'Web Analytics'},
+      {key:'monitoramento',icon:'monitoring',label:'Monitorização'},
+      {key:'alertas',icon:'alerts',label:'Alertas'},
+      {key:'relatorios',icon:'reports',label:'Relatórios'},
+    ]},
+    {label:'Sistema',items:[
+      {key:'integracoes',icon:'integrations',label:'Integrações'},
+      {key:'utilizadores',icon:'users',label:'Utilizadores'},
+      {key:'definicoes',icon:'settings',label:'Definições'},
+    ]},
+  ];
+  return (
+    <div style={adminStyles.sidebar}>
+      <div style={adminStyles.sidebarBrand}>
+        <div style={adminStyles.sidebarLogo}>Admin <em style={adminStyles.sidebarLogoEm}>Suite</em></div>
+        <div style={adminStyles.sidebarSub}>Voyago Travel</div>
+      </div>
+      <div style={{flex:1,paddingBottom:16}}>
+        {groups.map(g=>(
+          <div key={g.label}>
+            <div style={adminStyles.sidebarSection}>{g.label}</div>
+            <div style={adminStyles.sidebarNav}>
+              {g.items.map(item=>(
+                <div key={item.key} onClick={()=>setPage(item.key)}
+                  style={{...adminStyles.navItem,...(page===item.key?adminStyles.navItemActive:{})}}>
+                  <Icon name={item.icon} size={15} color={page===item.key?'#c9a96e':'#8a8578'}/>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── HEADER ────────────────────────────────────────────
+function Header({user,onLogout,searchQ,setSearchQ}){
+  const [notifs,setNotifs]=useState(3);
+  return (
+    <div style={adminStyles.header}>
+      <div style={adminStyles.searchBar}>
+        <Icon name="search" size={14} color="#b0a898"/>
+        <input style={adminStyles.searchInput} value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Pesquisar leads, clientes..."/>
+      </div>
+      <div style={{flex:1}}/>
+      <button style={adminStyles.iconBtn} onClick={()=>setNotifs(0)}>
+        <Icon name="bell" size={18} color="#5a5449"/>
+        {notifs>0&&<span style={{position:'absolute',top:3,right:3,background:'#e74c3c',color:'#fff',fontSize:9,fontWeight:700,width:14,height:14,borderRadius:50,display:'flex',alignItems:'center',justifyContent:'center'}}>{notifs}</span>}
+      </button>
+      <div style={adminStyles.userChip}>
+        <div style={{width:32,height:32,borderRadius:'50%',background:'rgba(201,169,110,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Cormorant Garamond',serif",fontSize:14,color:'#c9a96e',fontStyle:'italic'}}>
+          {user.email[0].toUpperCase()}
+        </div>
+        <div>
+          <div style={adminStyles.userEmail}>{user.email}</div>
+          <div style={adminStyles.userRole}>{user.role||'Administrador'}</div>
+        </div>
+      </div>
+      <button style={adminStyles.iconBtn} onClick={onLogout} title="Sair">
+        <Icon name="logout" size={18} color="#5a5449"/>
+      </button>
+    </div>
+  );
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
+const chartData=[
+  {label:'11 abr',qualificados:1,parciais:2},{label:'12 abr',qualificados:0,parciais:1},{label:'13 abr',qualificados:2,parciais:3},
+  {label:'14 abr',qualificados:1,parciais:2},{label:'15 abr',qualificados:3,parciais:1},{label:'16 abr',qualificados:2,parciais:4},
+  {label:'17 abr',qualificados:4,parciais:2},{label:'18 abr',qualificados:2,parciais:3},{label:'19 abr',qualificados:5,parciais:2},
+  {label:'20 abr',qualificados:3,parciais:4},{label:'21 abr',qualificados:6,parciais:3},{label:'22 abr',qualificados:4,parciais:5},
+  {label:'23 abr',qualificados:8,parciais:4},{label:'24 abr',qualificados:5,parciais:6},
+];
+const funnelData=[
+  {label:'Recebidos',val:8},{label:'Parciais',val:2},{label:'Completos',val:6},{label:'Contactados',val:4},{label:'Propostas',val:3},{label:'Ganhos',val:2},
+];
+const topDestinos=[
+  {nome:'Maldivas (Lua de mel)', val:85},{nome:'Bali',val:62},{nome:'Japão',val:54},{nome:'Paris',val:41},{nome:'Santorini',val:33},
+];
+
+function DashboardPage({leads}){
+  const total=leads.length;
+  const qualificados=leads.filter(l=>l.etapa==='Completo').length;
+  const pagos=leads.filter(l=>l.status==='Ganho').length;
+  const taxa=total>0?Math.round((qualificados/total)*100):0;
+  const contactados=leads.filter(l=>['Contactado','Proposta','Ganho'].includes(l.status)).length;
+  const emProposta=leads.filter(l=>l.status==='Proposta').length;
+  const recentes=leads.slice().reverse().slice(0,5);
+  const receita=leads.filter(l=>l.status==='Ganho').length*35000;
+
+  const kpis=[
+    {label:'Total de Leads',val:total,delta:'+100% do período anterior',up:true,spark:[2,3,4,3,5,6,4,8]},
+    {label:'Qualificados',val:qualificados,delta:'formulário completo',up:true,spark:[1,2,2,3,3,4,5,6]},
+    {label:'Pagos',val:pagos,delta:`conversões nos últimos 7`,up:true,spark:[0,1,1,2,2,2,3,2]},
+    {label:'Taxa de qualificação',val:`${taxa}%`,delta:`+100%`,up:true,spark:[20,30,40,35,50,48,55,50]},
+    {label:'Contactados',val:contactados,delta:'em processo ativo',up:true,spark:[1,2,3,2,3,4,3,4]},
+    {label:'Em Proposta',val:emProposta,delta:'aguardando resposta',up:false,spark:[3,2,3,2,2,3,2,3]},
+    {label:'Tempo médio resposta',val:'— ',delta:'sem dados',up:false,spark:[]},
+    {label:'Receita Gerada',val:`R$${(receita/1000).toFixed(0)}k`,delta:'aprovado Stripe',up:true,spark:[5,8,12,18,24,28,32,35]},
+  ];
+
+  return (
+    <div>
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Visão geral</h1>
+        <p style={{fontSize:12,color:'#8a8578'}}>Performance · conversões · qualidade dos leads</p>
+      </div>
+
+      {/* KPI row 1 */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:14}}>
+        {kpis.slice(0,4).map((k,i)=>(
+          <div key={i} style={adminStyles.kpiCard}>
+            <div style={adminStyles.kpiLabel}>{k.label}</div>
+            <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between'}}>
+              <div style={adminStyles.kpiNum}>{k.val}</div>
+              {k.spark.length>0&&<Sparkline data={k.spark} color={k.up?'#c9a96e':'#e74c3c'}/>}
+            </div>
+            <div style={{...adminStyles.kpiDelta,color:k.up?'#27ae60':'#e74c3c'}}>
+              <Icon name={k.up?'arrowup':'arrowdown'} size={12} color={k.up?'#27ae60':'#e74c3c'}/>
+              <span style={{fontSize:11}}>{k.delta}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* KPI row 2 */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
+        {kpis.slice(4,8).map((k,i)=>(
+          <div key={i} style={adminStyles.kpiCard}>
+            <div style={adminStyles.kpiLabel}>{k.label}</div>
+            <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between'}}>
+              <div style={{...adminStyles.kpiNum,fontSize:28}}>{k.val}</div>
+              {k.spark.length>0&&<Sparkline data={k.spark} color={k.up?'#c9a96e':'#e74c3c'}/>}
+            </div>
+            <div style={{...adminStyles.kpiDelta,color:k.up?'#27ae60':'#e74c3c'}}>
+              <span style={{fontSize:11}}>{k.delta}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts row */}
+      <div style={{display:'grid',gridTemplateColumns:'1.6fr 1fr',gap:20,marginBottom:20}}>
+        <div style={adminStyles.card}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+            <div>
+              <div style={{fontWeight:500,color:'#2c2c2c',marginBottom:2}}>Leads ao longo do tempo</div>
+              <div style={{fontSize:11,color:'#b0a898'}}>Total por qualificação</div>
+            </div>
+            <div style={{display:'flex',gap:16,fontSize:11,color:'#8a8578'}}>
+              <span style={{display:'flex',alignItems:'center',gap:5}}><span style={{width:12,height:2,background:'#c9a96e',display:'inline-block',borderRadius:1}}/> Qualificados</span>
+              <span style={{display:'flex',alignItems:'center',gap:5}}><span style={{width:12,height:2,background:'#18202e',display:'inline-block',borderRadius:1,opacity:0.4}}/> Parciais</span>
+            </div>
+          </div>
+          <LineChart data={chartData}/>
+        </div>
+        <div style={adminStyles.card}>
+          <div style={{fontWeight:500,color:'#2c2c2c',marginBottom:4}}>Top destinos</div>
+          <div style={{fontSize:11,color:'#b0a898',marginBottom:20}}>Onde o público quer ir</div>
+          {topDestinos.map((d,i)=>(
+            <div key={i} style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
+              <span style={{fontSize:12,color:'#5a5449',flex:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{d.nome}</span>
+              <div style={{width:100,background:'#f0ece4',borderRadius:3,height:6}}>
+                <div style={{width:`${d.val}%`,background:'#c9a96e',height:'100%',borderRadius:3}}/>
+              </div>
+              <span style={{fontSize:11,color:'#8a8578',width:24,textAlign:'right'}}>{d.val}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Funnel + Leads recentes */}
+      <div style={{display:'grid',gridTemplateColumns:'1.6fr 1fr',gap:20}}>
+        <div style={adminStyles.card}>
+          <div style={{fontWeight:500,color:'#2c2c2c',marginBottom:4}}>Funil de conversão</div>
+          <div style={{fontSize:11,color:'#b0a898',marginBottom:20}}>Do pedido até à reserva confirmada</div>
+          <BarChart data={funnelData}/>
+        </div>
+        <div style={adminStyles.card}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+            <div style={{fontWeight:500,color:'#2c2c2c'}}>Leads recentes</div>
+            <span style={{fontSize:11,color:'#c9a96e',cursor:'pointer'}}>Ver todos →</span>
+          </div>
+          {recentes.map((l,i)=>(
+            <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid #f4f3ef'}}>
+              <div>
+                <div style={{fontSize:13,fontWeight:500,color:'#2c2c2c'}}>{l.nome}</div>
+                <div style={{fontSize:11,color:'#8a8578'}}>{l.email}</div>
+              </div>
+              <Badge status={l.status}/>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── LEADS PAGE ─────────────────────────────────────────
+function LeadsPage({leads,setLeads}){
+  const [search,setSearch]=useState('');
+  const [etapaF,setEtapaF]=useState('');
+  const [statusF,setStatusF]=useState('');
+  const [selected,setSelected]=useState(null);
+
+  const filtered=leads.filter(l=>{
+    const q=search.toLowerCase();
+    const match=!q||(l.nome.toLowerCase().includes(q)||l.email.toLowerCase().includes(q)||l.destino.toLowerCase().includes(q));
+    const et=!etapaF||l.etapa===etapaF;
+    const st=!statusF||l.status===statusF;
+    return match&&et&&st;
+  });
+
+  const exportCSV=()=>{
+    const headers='Data,Nome,Email,Tel,Destino,Tipo,Budget,Etapa,Status,Origem\n';
+    const rows=filtered.map(l=>`${l.data},"${l.nome}","${l.email}","${l.tel}","${l.destino}","${l.tipo}","${l.budget}",${l.etapa},${l.status},${l.origem}`).join('\n');
+    const blob=new Blob([headers+rows],{type:'text/csv'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='leads.csv'; a.click();
+  };
+
+  const updateStatus=(id,status)=>setLeads(prev=>prev.map(l=>l.id===id?{...l,status}:l));
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:24}}>
+        <div>
+          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Leads</h1>
+          <p style={{fontSize:12,color:'#8a8578'}}>{filtered.length} de {leads.length} pedidos</p>
+        </div>
+        <button style={adminStyles.btnSecondary} onClick={exportCSV}>
+          <Icon name="export" size={14}/> Exportar CSV
+        </button>
+      </div>
+
+      <div style={{display:'flex',gap:12,marginBottom:20}}>
+        <div style={{...adminStyles.searchBar,flex:1,maxWidth:440}}>
+          <Icon name="search" size={14} color="#b0a898"/>
+          <input style={adminStyles.searchInput} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Pesquisar por nome, email, telefone, destino..."/>
+        </div>
+        <select style={{...adminStyles.select,width:160}} value={etapaF} onChange={e=>setEtapaF(e.target.value)}>
+          <option value="">Todas etapas</option>
+          <option>Parcial</option>
+          <option>Completo</option>
+        </select>
+        <select style={{...adminStyles.select,width:160}} value={statusF} onChange={e=>setStatusF(e.target.value)}>
+          <option value="">Todos status</option>
+          {['Novo','Contactado','Proposta','Ganho','Perdido'].map(s=><option key={s}>{s}</option>)}
+        </select>
+      </div>
+
+      <div style={adminStyles.card}>
+        <table style={adminStyles.table}>
+          <thead>
+            <tr>
+              {['Data','Nome','Contacto','Destino','Etapa','Status',''].map(h=>(
+                <th key={h} style={adminStyles.th}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(l=>(
+              <tr key={l.id} style={{cursor:'pointer',transition:'background 0.15s'}} onMouseEnter={e=>e.currentTarget.style.background='#faf8f4'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={adminStyles.tdMuted}>{l.data.slice(5).split('-').reverse().join(' ')}</td>
+                <td style={{...adminStyles.td,fontWeight:500}}>{l.nome}</td>
+                <td style={adminStyles.tdMuted}>
+                  <div style={{color:'#c9a96e',fontSize:12}}>{l.email}</div>
+                  <div style={{fontSize:11}}>{l.tel||'—'}</div>
+                </td>
+                <td style={adminStyles.tdMuted}>{l.destino||'—'}{l.tipo?<span style={{fontSize:11,color:'#c9a96e',marginLeft:6}}>· {l.tipo}</span>:null}</td>
+                <td style={adminStyles.td}><Badge status={l.etapa}/></td>
+                <td style={adminStyles.td}>
+                  <select value={l.status} onChange={e=>updateStatus(l.id,e.target.value)}
+                    style={{background:'none',border:'none',fontSize:12,fontWeight:500,cursor:'pointer',color:l.status==='Ganho'?'#27ae60':l.status==='Perdido'?'#e74c3c':l.status==='Proposta'?'#e67e22':'#2980b9',outline:'none'}}>
+                    {['Novo','Contactado','Proposta','Ganho','Perdido'].map(s=><option key={s}>{s}</option>)}
+                  </select>
+                </td>
+                <td style={adminStyles.td}>
+                  <button style={{...adminStyles.iconBtn,padding:4}} onClick={()=>setSelected(selected?.id===l.id?null:l)}>
+                    <Icon name="eye" size={14} color="#8a8578"/>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {selected&&(
+        <div style={adminStyles.modalOverlay} onClick={()=>setSelected(null)}>
+          <div style={adminStyles.modalPanel} onClick={e=>e.stopPropagation()}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+              <div style={adminStyles.modalTitle}>{selected.nome}</div>
+              <button style={adminStyles.iconBtn} onClick={()=>setSelected(null)}><Icon name="x" size={16}/></button>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:20}}>
+              {[['Email',selected.email],['Tel',selected.tel||'—'],['Destino',selected.destino||'—'],['Tipo',selected.tipo||'—'],['Budget',selected.budget||'—'],['Data',selected.data],['Etapa',selected.etapa],['Status',selected.status],['Origem',selected.origem]].map(([l,v])=>(
+                <div key={l}>
+                  <div style={{fontSize:10,color:'#b0a898',letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:4}}>{l}</div>
+                  <div style={{fontSize:13,color:'#2c2c2c'}}>{v}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+              {['Contactado','Proposta','Ganho','Perdido'].map(s=>(
+                <button key={s} onClick={()=>{updateStatus(selected.id,s);setSelected({...selected,status:s});}}
+                  style={{...adminStyles.btnSecondary,fontSize:11,...(selected.status===s?{background:'rgba(201,169,110,0.1)',borderColor:'#c9a96e',color:'#c9a96e'}:{})}}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── PIPELINE PAGE ──────────────────────────────────────
+function PipelinePage(){
+  const cols=['Novo','Contactado','Proposta','Ganho','Perdido'];
+  const colColors={Novo:'#e8f4fd',Contactado:'#fef9ec',Proposta:'#fff3e0',Ganho:'#eafaf1',Perdido:'#fdf0ef'};
+  const colText={Novo:'#2980b9',Contactado:'#c9a96e',Proposta:'#e67e22',Ganho:'#27ae60',Perdido:'#e74c3c'};
+  const [board,setBoard]=useState(PIPELINE_DATA);
+  const [drag,setDrag]=useState(null);
+
+  const onDragStart=(card,col)=>setDrag({card,col});
+  const onDrop=(targetCol)=>{
+    if(!drag||drag.col===targetCol)return;
+    const src=[...board[drag.col].filter(c=>c.id!==drag.card.id)];
+    const dst=[...board[targetCol],drag.card];
+    setBoard({...board,[drag.col]:src,[targetCol]:dst});
+    setDrag(null);
+  };
+
+  return (
+    <div>
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Pipeline de vendas</h1>
+        <p style={{fontSize:12,color:'#8a8578'}}>Arrasta os cartões para mover entre estados. As alterações guardam-se automaticamente.</p>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:14,alignItems:'start'}}>
+        {cols.map(col=>(
+          <div key={col} onDragOver={e=>e.preventDefault()} onDrop={()=>onDrop(col)}
+            style={{background:'#faf8f4',borderRadius:10,border:'1px solid #e8e3da',minHeight:400}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 14px',borderBottom:'1px solid #e8e3da',background:colColors[col],borderRadius:'10px 10px 0 0'}}>
+              <span style={{fontSize:11,fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',color:colText[col]}}>{col}</span>
+              <span style={{fontSize:12,color:colText[col],fontWeight:600}}>{board[col].length}</span>
+            </div>
+            <div style={{padding:10,display:'flex',flexDirection:'column',gap:8}}>
+              {board[col].map(card=>(
+                <div key={card.id} draggable onDragStart={()=>onDragStart(card,col)}
+                  style={{background:'#fff',borderRadius:8,padding:'12px 14px',border:'1px solid #ece8e0',cursor:'grab',boxShadow:'0 1px 4px rgba(0,0,0,0.04)'}}>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
+                    <span style={{fontSize:13,fontWeight:500,color:'#2c2c2c'}}>{card.nome}</span>
+                    <Icon name="drag" size={14} color="#d0c8bc"/>
+                  </div>
+                  {card.email&&<div style={{fontSize:11,color:'#8a8578',display:'flex',alignItems:'center',gap:5,marginBottom:3}}>
+                    <span style={{color:'#c9a96e'}}>✉</span> {card.email}
+                  </div>}
+                  {card.tel&&<div style={{fontSize:11,color:'#8a8578',display:'flex',alignItems:'center',gap:5,marginBottom:3}}>
+                    <span>☎</span> {card.tel}
+                  </div>}
+                  {card.destino&&<div style={{fontSize:11,marginTop:6,display:'flex',alignItems:'center',gap:5}}>
+                    <span style={{width:6,height:6,borderRadius:'50%',background:'#c9a96e',display:'inline-block'}}/>
+                    <span style={{color:'#5a5449'}}>{card.destino}</span>
+                  </div>}
+                  <div style={{fontSize:10,color:'#b0a898',marginTop:8}}>{card.data}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── GUIAS PAGE ─────────────────────────────────────────
+function GuiasPage(){
+  const [guias,setGuias]=useState(INITIAL_GUIAS);
+  const [search,setSearch]=useState('');
+  const [modal,setModal]=useState(null); // null | {mode:'new'|'edit', data}
+  const empty={cidade:'',pais:'',continente:'Europa',tema:'Cidade',badge:'Popular',preco:19.90,ativo:true,img:'',ordem:99,descricao:''};
+  const [form,setForm]=useState(empty);
+
+  const filtered=guias.filter(g=>!search||(g.cidade.toLowerCase().includes(search.toLowerCase())||g.pais.toLowerCase().includes(search.toLowerCase())));
+
+  const openNew=()=>{setForm(empty);setModal({mode:'new'});};
+  const openEdit=g=>{setForm({...g});setModal({mode:'edit',id:g.id});};
+  const save=()=>{
+    if(modal.mode==='new') setGuias(prev=>[...prev,{...form,id:Date.now()}]);
+    else setGuias(prev=>prev.map(g=>g.id===modal.id?{...form,id:modal.id}:g));
+    setModal(null);
+  };
+  const remove=id=>setGuias(prev=>prev.filter(g=>g.id!==id));
+  const toggle=id=>setGuias(prev=>prev.map(g=>g.id===id?{...g,ativo:!g.ativo}:g));
+
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:24}}>
+        <div>
+          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Guias de viagem</h1>
+          <p style={{fontSize:12,color:'#8a8578'}}>Gerir o catálogo digital. Edite preços e fotos diretamente na tabela.</p>
+        </div>
+        <button style={adminStyles.btnPrimary} onClick={openNew}><Icon name="plus" size={14} color="#18202e"/> Novo guia</button>
+      </div>
+
+      <div style={{...adminStyles.searchBar,marginBottom:20,maxWidth:500}}>
+        <Icon name="search" size={14} color="#b0a898"/>
+        <input style={adminStyles.searchInput} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Pesquisar cidade ou país..."/>
+      </div>
+
+      <div style={adminStyles.card}>
+        <table style={adminStyles.table}>
+          <thead><tr>{['Foto','Cidade','País','Continente','Tema','Etiqueta','Preço','Ativo','Ações'].map(h=><th key={h} style={adminStyles.th}>{h}</th>)}</tr></thead>
+          <tbody>
+            {filtered.map(g=>(
+              <tr key={g.id} style={{cursor:'default'}} onMouseEnter={e=>e.currentTarget.style.background='#faf8f4'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={adminStyles.td}>{g.img&&<img src={g.img} alt={g.cidade} style={{width:44,height:36,objectFit:'cover',borderRadius:4}}/>}</td>
+                <td style={{...adminStyles.td,fontWeight:500,color:'#c9a96e',cursor:'pointer'}} onClick={()=>openEdit(g)}>{g.cidade}</td>
+                <td style={adminStyles.tdMuted}>{g.pais}</td>
+                <td style={{...adminStyles.td,color:'#c9a96e',fontStyle:'italic',fontSize:12}}>{g.continente}</td>
+                <td style={adminStyles.tdMuted}>{g.tema}</td>
+                <td style={adminStyles.td}><Badge status={g.badge}/></td>
+                <td style={adminStyles.td}>€{g.preco.toFixed(2)}</td>
+                <td style={adminStyles.td}><Toggle on={g.ativo} onChange={()=>toggle(g.id)}/></td>
+                <td style={adminStyles.td}>
+                  <div style={{display:'flex',gap:6}}>
+                    <button style={adminStyles.iconBtn} onClick={()=>openEdit(g)}><Icon name="edit" size={14} color="#8a8578"/></button>
+                    <button style={adminStyles.btnDanger} onClick={()=>remove(g.id)}><Icon name="trash" size={14} color="#e74c3c"/></button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {modal&&(
+        <div style={adminStyles.modalOverlay} onClick={()=>setModal(null)}>
+          <div style={adminStyles.modalPanel} onClick={e=>e.stopPropagation()}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+              <div style={adminStyles.modalTitle}>{modal.mode==='new'?'Novo guia':'Editar guia'}</div>
+              <button style={adminStyles.iconBtn} onClick={()=>setModal(null)}><Icon name="x" size={16}/></button>
+            </div>
+            <div style={adminStyles.formGroup}>
+              <label style={adminStyles.label}>Imagem de capa</label>
+              {form.img&&<img src={form.img} alt="" style={{width:80,height:60,objectFit:'cover',borderRadius:6,marginBottom:8,display:'block'}}/>}
+              <input style={adminStyles.input} placeholder="URL da imagem" value={form.img} onChange={e=>setForm({...form,img:e.target.value})}/>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <div style={adminStyles.formGroup}><label style={adminStyles.label}>Cidade *</label><input style={adminStyles.input} value={form.cidade} onChange={e=>setForm({...form,cidade:e.target.value})}/></div>
+              <div style={adminStyles.formGroup}><label style={adminStyles.label}>País *</label><input style={adminStyles.input} value={form.pais} onChange={e=>setForm({...form,pais:e.target.value})}/></div>
+              <div style={adminStyles.formGroup}>
+                <label style={adminStyles.label}>Continente</label>
+                <select style={adminStyles.select} value={form.continente} onChange={e=>setForm({...form,continente:e.target.value})}>
+                  {['Europa','Ásia','América','África','Oceania'].map(c=><option key={c}>{c}</option>)}
+                </select>
+              </div>
+              <div style={adminStyles.formGroup}>
+                <label style={adminStyles.label}>Tema</label>
+                <select style={adminStyles.select} value={form.tema} onChange={e=>setForm({...form,tema:e.target.value})}>
+                  {['Cidade','Praia','Cultural','Romântico','Aventura','Natureza'].map(t=><option key={t}>{t}</option>)}
+                </select>
+              </div>
+              <div style={adminStyles.formGroup}>
+                <label style={adminStyles.label}>Etiqueta</label>
+                <select style={adminStyles.select} value={form.badge} onChange={e=>setForm({...form,badge:e.target.value})}>
+                  {['Bestseller','Popular','Novo','Premium'].map(b=><option key={b}>{b}</option>)}
+                </select>
+              </div>
+              <div style={adminStyles.formGroup}><label style={adminStyles.label}>Preço (€)</label><input style={adminStyles.input} type="number" step="0.1" value={form.preco} onChange={e=>setForm({...form,preco:parseFloat(e.target.value)||0})}/></div>
+            </div>
+            <div style={adminStyles.formGroup}><label style={adminStyles.label}>Descrição</label><textarea style={adminStyles.textarea} value={form.descricao||''} onChange={e=>setForm({...form,descricao:e.target.value})}/></div>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+              <div style={adminStyles.formGroup}>
+                <label style={adminStyles.label}>Ordem</label>
+                <input style={{...adminStyles.input,width:80}} type="number" value={form.ordem} onChange={e=>setForm({...form,ordem:parseInt(e.target.value)||99})}/>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <Toggle on={form.ativo} onChange={()=>setForm({...form,ativo:!form.ativo})}/>
+                <span style={{fontSize:12,color:'#5a5449'}}>Ativo na loja</span>
+              </div>
+            </div>
+            <div style={{display:'flex',gap:10}}>
+              <button style={adminStyles.btnSecondary} onClick={()=>setModal(null)}>Cancelar</button>
+              <button style={{...adminStyles.btnPrimary,flex:1,justifyContent:'center'}} onClick={save}>Guardar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── RECEITA PAGE ────────────────────────────────────────
+function ReceitaPage({leads}){
+  const ganhos=leads.filter(l=>l.status==='Ganho');
+  const receita=ganhos.length*35000;
+  const receitaGuias=INITIAL_GUIAS.reduce((s,g)=>s+(g.ativo?g.preco*Math.floor(Math.random()*20+5):0),0);
+
+  const monthlyData=[
+    {mes:'Jan',viagens:28000,guias:320},{mes:'Fev',viagens:35000,guias:420},{mes:'Mar',viagens:42000,guias:380},
+    {mes:'Abr',viagens:receita,guias:Math.round(receitaGuias)},{mes:'Mai',viagens:0,guias:0},{mes:'Jun',viagens:0,guias:0},
+  ];
+
+  return (
+    <div>
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Receita</h1>
+        <p style={{fontSize:12,color:'#8a8578'}}>Financeiro · comissões · guias digitais · projeções</p>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
+        {[
+          {label:'Receita Total (Abr)',val:`R$ ${(receita/1000).toFixed(1)}k`,delta:'+24% vs Março',up:true},
+          {label:'Guias Vendidos',val:`€ ${receitaGuias.toFixed(0)}`,delta:`${Math.round(receitaGuias/22)} unidades`,up:true},
+          {label:'Ticket Médio',val:'R$ 35k',delta:'por viagem confirmada',up:true},
+          {label:'Projeção Maio',val:'R$ 56k',delta:'+60% tendência',up:true},
+        ].map((k,i)=>(
+          <div key={i} style={adminStyles.kpiCard}>
+            <div style={adminStyles.kpiLabel}>{k.label}</div>
+            <div style={adminStyles.kpiNum}>{k.val}</div>
+            <div style={{...adminStyles.kpiDelta,color:k.up?'#27ae60':'#e74c3c'}}>
+              <Icon name={k.up?'arrowup':'arrowdown'} size={12} color={k.up?'#27ae60':'#e74c3c'}/>
+              <span style={{fontSize:11}}>{k.delta}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1.5fr 1fr',gap:20,marginBottom:20}}>
+        <div style={adminStyles.card}>
+          <div style={{fontWeight:500,marginBottom:20}}>Receita Mensal 2026</div>
+          <div style={{display:'flex',gap:6,alignItems:'flex-end',height:160}}>
+            {monthlyData.map((m,i)=>{
+              const max=Math.max(...monthlyData.map(d=>d.viagens),1);
+              const h=m.viagens?(m.viagens/max)*120:0;
+              const hg=(m.guias/max)*120;
+              return (
+                <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
+                  <div style={{display:'flex',gap:2,alignItems:'flex-end',height:120}}>
+                    <div style={{width:14,height:h,background:'#c9a96e',borderRadius:'3px 3px 0 0',transition:'height 0.6s'}}/>
+                    <div style={{width:14,height:hg,background:'rgba(201,169,110,0.3)',borderRadius:'3px 3px 0 0'}}/>
+                  </div>
+                  <span style={{fontSize:10,color:'#b0a898'}}>{m.mes}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div style={{display:'flex',gap:16,marginTop:12,fontSize:11,color:'#8a8578'}}>
+            <span style={{display:'flex',alignItems:'center',gap:5}}><span style={{width:12,height:8,background:'#c9a96e',display:'inline-block',borderRadius:2}}/> Viagens</span>
+            <span style={{display:'flex',alignItems:'center',gap:5}}><span style={{width:12,height:8,background:'rgba(201,169,110,0.3)',display:'inline-block',borderRadius:2}}/> Guias</span>
+          </div>
+        </div>
+        <div style={adminStyles.card}>
+          <div style={{fontWeight:500,marginBottom:16}}>Reservas recentes</div>
+          {ganhos.map((l,i)=>(
+            <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid #f4f3ef'}}>
+              <div>
+                <div style={{fontSize:13,fontWeight:500}}>{l.nome}</div>
+                <div style={{fontSize:11,color:'#8a8578'}}>{l.destino} · {l.tipo}</div>
+              </div>
+              <div style={{fontSize:13,fontWeight:500,color:'#27ae60'}}>{l.budget||'R$ 35.000'}</div>
+            </div>
+          ))}
+          {ganhos.length===0&&<div style={{fontSize:13,color:'#b0a898',textAlign:'center',padding:'30px 0'}}>Nenhuma reserva confirmada</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── WEB ANALYTICS PAGE ──────────────────────────────────
+function AnalyticsPage(){
+  const metrics=[
+    {label:'Sessões',val:'4.832',delta:'+18%',up:true,spark:[20,28,32,24,40,38,45,52]},
+    {label:'Utilizadores únicos',val:'3.201',delta:'+12%',up:true,spark:[15,20,25,20,30,28,35,40]},
+    {label:'Taxa de rejeição',val:'38,4%',delta:'-5%',up:true,spark:[50,48,45,42,40,39,38,38]},
+    {label:'Duração média',val:'3m 42s',delta:'+8%',up:true,spark:[2,2.5,3,3.2,3.5,3.6,3.7,3.7]},
+  ];
+  const pages=[
+    {page:'/ (Home)',sessoes:2140,taxa:'35%',duracao:'4m 12s'},
+    {page:'/contato',sessoes:982,taxa:'22%',duracao:'2m 45s'},
+    {page:'/guias',sessoes:742,taxa:'28%',duracao:'3m 10s'},
+    {page:'/destinos',sessoes:620,taxa:'42%',duracao:'2m 05s'},
+    {page:'/sobre',sessoes:348,taxa:'55%',duracao:'1m 32s'},
+  ];
+  const sources=[
+    {source:'Orgânico',val:42},{source:'Instagram',val:28},{source:'Google Ads',val:15},{source:'Indicação',val:10},{source:'Direto',val:5},
+  ];
+
+  return (
+    <div>
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Web Analytics</h1>
+        <p style={{fontSize:12,color:'#8a8578'}}>Tráfego · comportamento · fontes de aquisição</p>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
+        {metrics.map((m,i)=>(
+          <div key={i} style={adminStyles.kpiCard}>
+            <div style={adminStyles.kpiLabel}>{m.label}</div>
+            <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between'}}>
+              <div style={{...adminStyles.kpiNum,fontSize:28}}>{m.val}</div>
+              <Sparkline data={m.spark} color={m.up?'#c9a96e':'#e74c3c'}/>
+            </div>
+            <div style={{...adminStyles.kpiDelta,color:m.up?'#27ae60':'#e74c3c'}}>
+              <Icon name={m.up?'arrowup':'arrowdown'} size={12} color={m.up?'#27ae60':'#e74c3c'}/> <span style={{fontSize:11}}>{m.delta} vs mês anterior</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1.5fr 1fr',gap:20}}>
+        <div style={adminStyles.card}>
+          <div style={{fontWeight:500,marginBottom:16}}>Páginas mais visitadas</div>
+          <table style={adminStyles.table}>
+            <thead><tr>{['Página','Sessões','Rejeição','Duração'].map(h=><th key={h} style={adminStyles.th}>{h}</th>)}</tr></thead>
+            <tbody>{pages.map((p,i)=>(
+              <tr key={i} onMouseEnter={e=>e.currentTarget.style.background='#faf8f4'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{...adminStyles.td,color:'#c9a96e',fontWeight:500}}>{p.page}</td>
+                <td style={adminStyles.td}>{p.sessoes}</td>
+                <td style={adminStyles.tdMuted}>{p.taxa}</td>
+                <td style={adminStyles.tdMuted}>{p.duracao}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+        <div style={adminStyles.card}>
+          <div style={{fontWeight:500,marginBottom:20}}>Fontes de tráfego</div>
+          <BarChart data={sources.map(s=>({label:s.source,val:s.val}))} color="#c9a96e"/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── UTILIZADORES PAGE ──────────────────────────────────
+function UtilizadoresPage(){
+  const [users,setUsers]=useState(USERS);
+  const [invite,setInvite]=useState('');
+  const doInvite=()=>{
+    if(invite.includes('@')){
+      setUsers(prev=>[...prev,{id:Date.now(),email:invite,nome:'',role:'user',estado:'Ativo',criado:'24 abr 2026'}]);
+      setInvite('');
+      alert('Convite enviado! Uma janela com o link de definição de password foi aberta — copie ou envie por email.');
+    }
+  };
+  const toggleRole=(id)=>setUsers(prev=>prev.map(u=>u.id===id?{...u,role:u.role==='admin'?'user':'admin'}:u));
+  const removeUser=(id)=>setUsers(prev=>prev.filter(u=>u.id!==id));
+
+  return (
+    <div>
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Equipa &amp; permissões</h1>
+        <p style={{fontSize:12,color:'#8a8578'}}>Convida membros para o painel admin ou remove acessos.</p>
+      </div>
+      <div style={{...adminStyles.card,marginBottom:20}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:16,color:'#c9a96e'}}>
+          <Icon name="invite" size={16} color="#c9a96e"/>
+          <span style={{fontWeight:500,fontSize:13}}>Convidar novo administrador</span>
+        </div>
+        <div style={{display:'flex',gap:10}}>
+          <input style={{...adminStyles.input,flex:1}} type="email" value={invite} onChange={e=>setInvite(e.target.value)} placeholder="email@dominio.com" onKeyDown={e=>e.key==='Enter'&&doInvite()}/>
+          <button style={adminStyles.btnPrimary} onClick={doInvite}>Convidar</button>
+        </div>
+        <p style={{fontSize:11,color:'#b0a898',marginTop:10}}>Após convidar, abre-se uma janela com o link de definição de password — copie ou envie por email.</p>
+      </div>
+      <div style={adminStyles.card}>
+        <div style={{fontWeight:500,marginBottom:16}}>Membros ({users.length})</div>
+        <table style={adminStyles.table}>
+          <thead><tr>{['Email','Papéis','Estado','Criado','Ações'].map(h=><th key={h} style={adminStyles.th}>{h}</th>)}</tr></thead>
+          <tbody>{users.map(u=>(
+            <tr key={u.id} onMouseEnter={e=>e.currentTarget.style.background='#faf8f4'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+              <td style={adminStyles.td}>
+                <div style={{fontWeight:500}}>{u.email}</div>
+                {u.nome&&<div style={{fontSize:11,color:'#8a8578'}}>{u.nome}</div>}
+              </td>
+              <td style={adminStyles.td}>
+                <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                  <Badge status={u.role}/>
+                  {u.role==='admin'&&<Badge status="admin"/>}
+                </div>
+              </td>
+              <td style={adminStyles.td}><Badge status={u.estado}/></td>
+              <td style={adminStyles.tdMuted}>{u.criado}</td>
+              <td style={adminStyles.td}>
+                {u.id!==1&&(
+                  <div style={{display:'flex',gap:8}}>
+                    <button style={{...adminStyles.btnSecondary,padding:'4px 10px',fontSize:11}} onClick={()=>toggleRole(u.id)}>
+                      {u.role==='admin'?'↓ Remover admin':'↑ Tornar admin'}
+                    </button>
+                    <button style={adminStyles.btnDanger} onClick={()=>removeUser(u.id)}><Icon name="trash" size={13} color="#e74c3c"/></button>
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}</tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ── GENERIC PLACEHOLDER PAGE ────────────────────────────
+function PlaceholderPage({title,subtitle,icon}){
+  return (
+    <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:400,gap:16,color:'#b0a898'}}>
+      <Icon name={icon} size={48} color="#d4cdc3"/>
+      <div>
+        <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:26,fontWeight:300,color:'#18202e',textAlign:'center',marginBottom:6}}>{title}</h2>
+        <p style={{fontSize:13,color:'#8a8578',textAlign:'center'}}>{subtitle}</p>
+      </div>
+      <span style={{fontSize:12,color:'#c9a96e',border:'1px solid rgba(201,169,110,0.3)',padding:'8px 20px',borderRadius:6}}>Em desenvolvimento</span>
+    </div>
+  );
+}
+
+// ── CLIENTES PAGE ───────────────────────────────────────
+function ClientesPage({leads}){
+  const clientes=leads.filter(l=>l.status==='Ganho'||l.status==='Proposta');
+  return (
+    <div>
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Clientes</h1>
+        <p style={{fontSize:12,color:'#8a8578'}}>{clientes.length} clientes ativos</p>
+      </div>
+      <div style={adminStyles.card}>
+        <table style={adminStyles.table}>
+          <thead><tr>{['Nome','Contacto','Destino','Tipo','Budget','Status'].map(h=><th key={h} style={adminStyles.th}>{h}</th>)}</tr></thead>
+          <tbody>{clientes.map(l=>(
+            <tr key={l.id} onMouseEnter={e=>e.currentTarget.style.background='#faf8f4'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+              <td style={{...adminStyles.td,fontWeight:500}}>{l.nome}</td>
+              <td style={adminStyles.tdMuted}><div style={{color:'#c9a96e'}}>{l.email}</div><div>{l.tel||'—'}</div></td>
+              <td style={adminStyles.td}>{l.destino||'—'}</td>
+              <td style={adminStyles.tdMuted}>{l.tipo||'—'}</td>
+              <td style={adminStyles.td}>{l.budget||'—'}</td>
+              <td style={adminStyles.td}><Badge status={l.status}/></td>
+            </tr>
+          ))}</tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ── ALERTAS PAGE ────────────────────────────────────────
+function AlertasPage(){
+  const [alertas,setAlertas]=useState([
+    {id:1,tipo:'info',msg:'Nova lead qualificada: Roberto Almeida — Japão',time:'há 2 min',lida:false},
+    {id:2,tipo:'success',msg:'Guia "Paris" atingiu 50 vendas este mês',time:'há 1 hora',lida:false},
+    {id:3,tipo:'warning',msg:'Lead "João Pereira" mudou para Perdido',time:'há 3 horas',lida:true},
+    {id:4,tipo:'info',msg:'Novo lead parcial: Mariana Oliveira',time:'há 5 horas',lida:true},
+    {id:5,tipo:'success',msg:'Reserva confirmada: Ana Paula & Rafael — Maldivas',time:'há 1 dia',lida:true},
+  ]);
+  const cores={info:{bg:'#edf6f9',color:'#2980b9'},success:{bg:'#eafaf1',color:'#27ae60'},warning:{bg:'#fff3e0',color:'#e67e22'},danger:{bg:'#fdf0ef',color:'#e74c3c'}};
+  const marcarLida=id=>setAlertas(prev=>prev.map(a=>a.id===id?{...a,lida:true}:a));
+  const naoLidas=alertas.filter(a=>!a.lida).length;
+  return (
+    <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+        <div>
+          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Alertas</h1>
+          <p style={{fontSize:12,color:'#8a8578'}}>{naoLidas} não lidos</p>
+        </div>
+        <button style={adminStyles.btnSecondary} onClick={()=>setAlertas(prev=>prev.map(a=>({...a,lida:true})))}>Marcar todos como lidos</button>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {alertas.map(a=>{
+          const c=cores[a.tipo];
+          return (
+            <div key={a.id} style={{...adminStyles.card,display:'flex',alignItems:'center',gap:16,opacity:a.lida?0.6:1,borderLeft:`3px solid ${c.color}`}}>
+              <div style={{flex:1}}>
+                <div style={{fontSize:13,color:'#2c2c2c',fontWeight:a.lida?400:500}}>{a.msg}</div>
+                <div style={{fontSize:11,color:'#b0a898',marginTop:4}}>{a.time}</div>
+              </div>
+              {!a.lida&&<button style={{...adminStyles.btnSecondary,padding:'5px 12px',fontSize:11}} onClick={()=>marcarLida(a.id)}>Marcar lida</button>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── DEFINIÇÕES PAGE ─────────────────────────────────────
+function DefinicoesPage(){
+  const [cfg,setCfg]=useState({
+    empresa:'Voyago',site:'https://voyago.com.br',email:'contato@voyago.com.br',
+    whatsapp:'+55 11 9 9999-9999',notifs:true,emailMarketing:true,whatsappAuto:true,
+  });
+  return (
+    <div>
+      <div style={{marginBottom:24}}>
+        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:28,fontWeight:400,color:'#18202e',marginBottom:4}}>Definições</h1>
+        <p style={{fontSize:12,color:'#8a8578'}}>Configurações gerais do sistema</p>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+        <div style={adminStyles.card}>
+          <div style={{fontWeight:500,marginBottom:20}}>Informações da empresa</div>
+          {[['Nome da empresa','empresa','text'],['Website','site','url'],['Email de contacto','email','email'],['WhatsApp','whatsapp','tel']].map(([l,k,t])=>(
+            <div key={k} style={adminStyles.formGroup}>
+              <label style={adminStyles.label}>{l}</label>
+              <input style={adminStyles.input} type={t} value={cfg[k]} onChange={e=>setCfg({...cfg,[k]:e.target.value})}/>
+            </div>
+          ))}
+          <button style={adminStyles.btnPrimary}>Guardar alterações</button>
+        </div>
+        <div style={adminStyles.card}>
+          <div style={{fontWeight:500,marginBottom:20}}>Notificações &amp; automações</div>
+          {[['Notificações push de novas leads','notifs'],['Email automático para leads parciais','emailMarketing'],['WhatsApp automático para leads qualificadas','whatsappAuto']].map(([l,k])=>(
+            <div key={k} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 0',borderBottom:'1px solid #f4f3ef'}}>
+              <div>
+                <div style={{fontSize:13,fontWeight:500,color:'#2c2c2c'}}>{l}</div>
+              </div>
+              <Toggle on={cfg[k]} onChange={()=>setCfg({...cfg,[k]:!cfg[k]})}/>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── MAIN APP ───────────────────────────────────────────
+function App(){
+  const [user,setUser]=useState(null);
+  const [page,setPage]=useState('dashboard');
+  const [leads,setLeads]=useState(INITIAL_LEADS);
+  const [searchQ,setSearchQ]=useState('');
+
+  if(!user) return <LoginPage onLogin={setUser}/>;
+
+  const renderPage=()=>{
+    switch(page){
+      case 'dashboard': return <DashboardPage leads={leads}/>;
+      case 'leads': return <LeadsPage leads={leads} setLeads={setLeads}/>;
+      case 'clientes': return <ClientesPage leads={leads}/>;
+      case 'pipeline': return <PipelinePage/>;
+      case 'guias': return <GuiasPage/>;
+      case 'receita': return <ReceitaPage leads={leads}/>;
+      case 'analytics': return <AnalyticsPage/>;
+      case 'alertas': return <AlertasPage/>;
+      case 'utilizadores': return <UtilizadoresPage/>;
+      case 'definicoes': return <DefinicoesPage/>;
+      case 'pacotes': return <PlaceholderPage title="Pacotes" subtitle="Gestão de pacotes de viagem personalizados" icon="packages"/>;
+      case 'monitoramento': return <PlaceholderPage title="Monitorização" subtitle="Uptime, performance e logs do sistema" icon="monitoring"/>;
+      case 'relatorios': return <PlaceholderPage title="Relatórios" subtitle="Relatórios exportáveis em PDF e Excel" icon="reports"/>;
+      case 'integracoes': return <PlaceholderPage title="Integrações" subtitle="Stripe, Mailchimp, WhatsApp API, Google Analytics" icon="integrations"/>;
+      default: return <DashboardPage leads={leads}/>;
+    }
+  };
+
+  return (
+    <div style={adminStyles.layout}>
+      <Sidebar page={page} setPage={setPage}/>
+      <div style={adminStyles.main}>
+        <Header user={user} onLogout={()=>setUser(null)} searchQ={searchQ} setSearchQ={setSearchQ}/>
+        <div style={adminStyles.content}>{renderPage()}</div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
