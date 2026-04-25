@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voyago — Consultoria de Viagens de Luxo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #faf8f4;
+  --cream-dark: #f2ede4;
+  --navy: #18202e;
+  --navy-mid: #2a3447;
+  --gold: #c9a96e;
+  --gold-light: #dfc18e;
+  --text: #2c2c2c;
+  --text-muted: #7a7a72;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Jost', Helvetica, sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--cream);color:var(--text);font-size:16px;line-height:1.6;overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:72px;background:rgba(250,248,244,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,169,110,0.15);}
+.nav-logo{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--navy);letter-spacing:0.02em;text-decoration:none;}
+.nav-logo em{font-style:italic;color:var(--gold);}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none;}
+.nav-links a{font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);text-decoration:none;opacity:0.7;transition:opacity 0.2s;}
+.nav-links a:hover{opacity:1;}
+.nav-right{display:flex;align-items:center;gap:20px;}
+.nav-phone{font-family:var(--sans);font-size:12px;color:var(--text-muted);}
+.nav-btn{background:var(--navy);color:#fff;padding:11px 22px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+.nav-btn:hover{background:var(--navy-mid);}
+.nav-admin{background:none;border:1px solid rgba(201,169,110,0.4);color:var(--gold);padding:8px 16px;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.nav-admin:hover{background:var(--gold);color:var(--navy);}
+
+/* HERO */
+.hero{position:relative;height:100vh;min-height:680px;display:flex;align-items:flex-end;padding:0 80px 80px;overflow:hidden;}
+.hero-bg-img{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=85');background-size:cover;background-position:center;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(18,26,40,0.1) 0%,rgba(18,26,40,0.08) 30%,rgba(18,26,40,0.55) 70%,rgba(18,26,40,0.82) 100%);}
+.hero-content{position:relative;z-index:2;max-width:700px;}
+.eyebrow{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+.eyebrow-line{width:36px;height:1px;background:var(--gold);}
+.eyebrow span{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);}
+.hero h1{font-family:var(--serif);font-size:clamp(52px,6vw,84px);font-weight:300;line-height:1.08;color:#fff;margin-bottom:24px;text-wrap:pretty;}
+.hero h1 em{font-style:italic;color:var(--gold);font-weight:300;}
+.hero p{font-size:15px;color:rgba(255,255,255,0.82);max-width:440px;margin-bottom:40px;line-height:1.7;}
+.hero-ctas{display:flex;align-items:center;gap:32px;flex-wrap:wrap;}
+.btn-primary{background:var(--cream);color:var(--navy);border:none;padding:16px 32px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:background 0.2s,color 0.2s;display:inline-flex;align-items:center;gap:10px;}
+.btn-primary:hover{background:var(--gold);color:#fff;}
+.btn-ghost{font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.85);text-decoration:none;display:inline-flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:2px;transition:color 0.2s,border-color 0.2s;}
+.btn-ghost:hover{color:var(--gold);border-color:var(--gold);}
+
+/* TRUST BAR */
+.trust-bar{background:var(--navy);padding:28px 80px;display:flex;align-items:center;justify-content:space-around;gap:24px;flex-wrap:wrap;}
+.trust-item{text-align:center;display:flex;align-items:center;gap:16px;}
+.trust-num{font-family:var(--serif);font-size:36px;font-weight:300;color:var(--gold);line-height:1;}
+.trust-label{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:0.1em;text-transform:uppercase;text-align:left;line-height:1.4;}
+.trust-divider{width:1px;height:40px;background:rgba(255,255,255,0.1);}
+
+/* SECTIONS */
+section{padding:120px 80px;}
+.section-label{display:flex;align-items:center;gap:14px;margin-bottom:48px;}
+.section-label-line{width:36px;height:1px;background:var(--gold);}
+.section-label span{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);}
+h2{font-family:var(--serif);font-size:clamp(36px,4vw,58px);font-weight:300;line-height:1.1;color:var(--navy);text-wrap:pretty;}
+h2 em{font-style:italic;color:var(--gold);font-weight:300;}
+.link-arrow{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--navy);text-decoration:none;display:inline-flex;align-items:center;gap:10px;border-bottom:1px solid var(--navy);padding-bottom:2px;transition:color 0.2s,border-color 0.2s;}
+.link-arrow:hover{color:var(--gold);border-color:var(--gold);}
+
+/* EXPERIENCES */
+#experiencias{padding-bottom:80px;}
+.exp-header{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-bottom:64px;}
+.exp-header p{font-size:15px;color:var(--text-muted);line-height:1.75;align-self:center;}
+.exp-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.exp-card{position:relative;overflow:hidden;cursor:pointer;}
+.exp-card-img{height:480px;position:relative;overflow:hidden;}
+.exp-card-img-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 0.6s ease;}
+.exp-card:hover .exp-card-img-bg{transform:scale(1.04);}
+.exp-card-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(18,26,40,0.7) 100%);}
+.exp-card-tag{position:absolute;top:20px;right:20px;font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.9);padding:6px 12px;border:1px solid rgba(255,255,255,0.35);}
+.exp-card-num{position:absolute;top:20px;left:20px;font-family:var(--serif);font-size:13px;color:rgba(255,255,255,0.5);font-style:italic;}
+.exp-card-body{padding:28px 0;}
+.exp-card-body h3{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--navy);margin-bottom:10px;}
+.exp-card-body h3 em{font-style:italic;color:var(--gold);}
+.exp-card-body p{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:20px;max-width:380px;}
+
+/* HOW IT WORKS */
+#como-funciona{background:var(--navy);color:#fff;}
+#como-funciona .section-label span{color:var(--gold);}
+#como-funciona .section-label-line{background:var(--gold);}
+.how-header{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:80px;}
+#como-funciona h2{color:#fff;}
+.how-header p{font-size:15px;color:rgba(255,255,255,0.55);line-height:1.75;align-self:center;}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;}
+.step{position:relative;padding-top:24px;border-top:1px solid rgba(255,255,255,0.1);}
+.step-num{font-family:var(--serif);font-size:42px;font-weight:300;color:var(--gold);font-style:italic;line-height:1;margin-bottom:20px;}
+.step h3{font-family:var(--serif);font-size:22px;font-weight:400;color:#fff;margin-bottom:12px;}
+.step p{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.75;}
+
+/* DESTINATIONS */
+#destinos .dest-header{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-bottom:56px;}
+#destinos .dest-header p{font-size:15px;color:var(--text-muted);line-height:1.75;align-self:center;}
+.dest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.dest-card{position:relative;overflow:hidden;cursor:pointer;}
+.dest-card-img{height:340px;position:relative;overflow:hidden;}
+.dest-card-img-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 0.6s ease;}
+.dest-card:hover .dest-card-img-bg{transform:scale(1.05);}
+.dest-card-body{padding:16px 0;display:flex;align-items:baseline;justify-content:space-between;}
+.dest-card-name{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--navy);}
+.dest-card-region{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);}
+
+/* ── GUIAS ONLINE ── */
+#guias{background:var(--cream-dark);padding:100px 80px;}
+#guias h2{color:var(--navy);margin-bottom:0;}
+.guias-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;}
+.cart-btn{position:relative;background:var(--gold);border:none;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.cart-btn:hover{background:var(--gold-light);}
+.cart-btn svg{width:22px;height:22px;color:var(--navy);}
+.cart-badge{position:absolute;top:-4px;right:-4px;background:var(--navy);color:#fff;font-family:var(--sans);font-size:10px;font-weight:600;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.guias-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
+.filter-btn{font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:0.08em;padding:8px 20px;border-radius:100px;border:1px solid rgba(201,169,110,0.4);background:none;color:var(--text);cursor:pointer;transition:all 0.2s;}
+.filter-btn.active,.filter-btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+.guias-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.guia-card{background:#fff;border-radius:8px;overflow:hidden;cursor:pointer;transition:transform 0.3s,box-shadow 0.3s;position:relative;}
+.guia-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.1);}
+.guia-img{height:200px;position:relative;overflow:hidden;}
+.guia-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;}
+.guia-card:hover .guia-img img{transform:scale(1.05);}
+.guia-badge{position:absolute;top:12px;left:12px;font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:0.08em;padding:4px 10px;border-radius:100px;background:var(--gold);color:var(--navy);}
+.guia-body{padding:16px;}
+.guia-name{font-family:var(--serif);font-size:18px;font-weight:500;color:var(--navy);margin-bottom:2px;}
+.guia-country{font-family:var(--sans);font-size:11px;color:var(--text-muted);font-style:italic;margin-bottom:14px;}
+.guia-footer{display:flex;align-items:center;justify-content:space-between;}
+.guia-price{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--navy);}
+.guia-add{background:var(--gold);color:var(--navy);border:none;padding:8px 14px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:0.08em;cursor:pointer;border-radius:4px;display:flex;align-items:center;gap:6px;transition:background 0.2s;white-space:nowrap;}
+.guia-add:hover{background:var(--gold-light);}
+.guia-add.added{background:var(--navy);color:#fff;}
+
+/* CART DRAWER */
+.cart-drawer{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:#fff;z-index:500;box-shadow:-8px 0 40px rgba(0,0,0,0.12);transition:right 0.4s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;}
+.cart-drawer.open{right:0;}
+.cart-drawer-header{padding:24px 28px;border-bottom:1px solid rgba(201,169,110,0.2);display:flex;align-items:center;justify-content:space-between;}
+.cart-drawer-header h3{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--navy);}
+.cart-close{background:none;border:none;cursor:pointer;font-size:22px;color:var(--text-muted);line-height:1;}
+.cart-items{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:16px;}
+.cart-item{display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);}
+.cart-item-img{width:56px;height:56px;object-fit:cover;border-radius:4px;flex-shrink:0;}
+.cart-item-info{flex:1;}
+.cart-item-name{font-family:var(--serif);font-size:16px;color:var(--navy);}
+.cart-item-country{font-family:var(--sans);font-size:11px;color:var(--text-muted);}
+.cart-item-price{font-family:var(--serif);font-size:16px;color:var(--gold);font-weight:500;}
+.cart-remove{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:18px;line-height:1;transition:color 0.2s;}
+.cart-remove:hover{color:#c0392b;}
+.cart-empty{text-align:center;padding:60px 20px;color:var(--text-muted);font-family:var(--serif);font-size:18px;font-style:italic;}
+.cart-footer{padding:24px 28px;border-top:1px solid rgba(201,169,110,0.2);}
+.cart-total{display:flex;justify-content:space-between;margin-bottom:16px;}
+.cart-total span{font-family:var(--sans);font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;}
+.cart-total strong{font-family:var(--serif);font-size:22px;color:var(--navy);}
+.cart-checkout{width:100%;background:var(--gold);color:var(--navy);border:none;padding:16px;font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:background 0.2s;}
+.cart-checkout:hover{background:var(--gold-light);}
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:499;display:none;}
+.cart-overlay.open{display:block;}
+
+/* MANIFESTO */
+#manifesto{padding:120px 80px;background:var(--cream-dark);}
+.manifesto-inner{display:grid;grid-template-columns:280px 1fr;gap:80px;align-items:start;max-width:1100px;}
+.manifesto-quote{font-family:var(--serif);font-size:clamp(22px,2.5vw,32px);font-weight:300;line-height:1.55;color:var(--navy);text-wrap:pretty;}
+.manifesto-quote em{font-style:italic;color:var(--gold);}
+.manifesto-sig{margin-top:40px;padding-top:24px;border-top:1px solid rgba(201,169,110,0.3);}
+.manifesto-sig strong{display:block;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--navy);margin-bottom:4px;}
+.manifesto-sig span{font-family:var(--sans);font-size:11px;color:var(--text-muted);letter-spacing:0.05em;text-transform:uppercase;}
+
+/* AUTHORITY */
+#sobre{padding:0;}
+.authority-grid{display:grid;grid-template-columns:1fr 1fr;min-height:620px;}
+.authority-photo{position:relative;overflow:hidden;min-height:580px;}
+.authority-photo img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.authority-content{background:var(--cream);padding:100px 80px;display:flex;flex-direction:column;justify-content:center;}
+.authority-content h2{margin-bottom:28px;}
+.authority-content > p{font-size:15px;color:var(--text-muted);line-height:1.8;margin-bottom:36px;max-width:460px;}
+.authority-blockquote{border-left:2px solid var(--gold);padding-left:24px;margin-bottom:32px;}
+.authority-blockquote p{font-family:var(--serif);font-size:18px;font-style:italic;color:var(--navy);line-height:1.6;font-weight:300;}
+.authority-sig{font-family:var(--sans);font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:8px;}
+.authority-sig::before{content:'— ';color:var(--gold);}
+
+/* TESTIMONIALS */
+#depoimentos{background:var(--cream);text-align:center;}
+.testi-header{margin-bottom:72px;}
+.testi-header .section-label{justify-content:center;}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;text-align:left;}
+.testi-card{padding:40px;background:#fff;border-top:2px solid var(--gold);transition:transform 0.3s,box-shadow 0.3s;}
+.testi-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.06);}
+.testi-mark{font-family:var(--serif);font-size:52px;color:var(--gold);line-height:1;margin-bottom:16px;font-style:italic;}
+.testi-text{font-family:var(--serif);font-weight:300;font-size:17px;line-height:1.75;color:var(--text);margin-bottom:28px;}
+.testi-person{display:flex;align-items:center;gap:14px;}
+.testi-avatar{width:44px;height:44px;border-radius:50%;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;color:var(--gold);font-style:italic;font-weight:300;flex-shrink:0;overflow:hidden;}
+.testi-avatar img{width:100%;height:100%;object-fit:cover;}
+.testi-name{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--navy);}
+.testi-trip{font-family:var(--sans);font-size:11px;color:var(--text-muted);margin-top:2px;}
+
+/* FAQ */
+#faq{background:var(--cream-dark);}
+.faq-inner{display:grid;grid-template-columns:1fr 1.4fr;gap:100px;align-items:start;}
+.faq-list{display:flex;flex-direction:column;gap:0;}
+.faq-item{border-bottom:1px solid rgba(201,169,110,0.2);}
+.faq-q{width:100%;background:none;border:none;padding:24px 0;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:var(--sans);font-size:15px;color:var(--navy);text-align:left;gap:20px;transition:color 0.2s;}
+.faq-q:hover,.faq-q.open{color:var(--gold);}
+.faq-icon{width:28px;height:28px;border:1px solid currentColor;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;line-height:1;transition:transform 0.3s;}
+.faq-q.open .faq-icon{transform:rotate(45deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.4s ease;}
+.faq-a-inner{padding:0 0 24px 0;font-size:14px;color:var(--text-muted);line-height:1.8;}
+
+/* ── 2-STEP FORM ── */
+#contato{background:var(--cream);padding:120px 80px;}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:start;}
+.cta-left h2{font-size:clamp(36px,4vw,60px);margin-bottom:24px;}
+.cta-left > p{font-size:15px;color:var(--text-muted);line-height:1.8;margin-bottom:40px;max-width:420px;}
+.cta-benefits{list-style:none;display:flex;flex-direction:column;gap:14px;}
+.cta-benefits li{font-family:var(--sans);font-size:13px;color:var(--text-muted);display:flex;gap:14px;align-items:baseline;}
+.cta-benefits li::before{content:attr(data-num);font-family:var(--serif);font-style:italic;color:var(--gold);font-size:15px;flex-shrink:0;min-width:20px;}
+
+/* Form card */
+.form-card{background:var(--navy);padding:48px 44px;}
+.form-header{margin-bottom:32px;text-align:center;}
+.form-section-label{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.form-card h3{font-family:var(--serif);font-size:clamp(26px,2.5vw,34px);font-weight:300;color:#fff;line-height:1.25;margin-bottom:10px;}
+.form-card h3 em{font-style:italic;color:var(--gold);}
+.form-subtitle{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6;}
+
+/* Progress bar */
+.form-progress{margin-bottom:28px;}
+.progress-track{display:flex;gap:6px;align-items:center;margin-bottom:8px;}
+.progress-seg{flex:1;height:3px;background:rgba(255,255,255,0.12);border-radius:2px;transition:background 0.4s;}
+.progress-seg.active{background:var(--gold);}
+.progress-label{font-family:var(--sans);font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;text-align:right;}
+
+/* Form steps */
+.form-step{display:none;}
+.form-step.active{display:block;}
+.form-step-title{font-family:var(--serif);font-size:18px;font-weight:400;color:#fff;margin-bottom:20px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:7px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);padding:13px 16px;font-family:var(--sans);font-size:14px;color:rgba(255,255,255,0.9);outline:none;transition:border-color 0.2s;appearance:none;border-radius:0;}
+.form-group input::placeholder,.form-group textarea::placeholder{color:rgba(255,255,255,0.22);}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);}
+.form-group select option{background:#18202e;color:#fff;}
+.form-group textarea{resize:vertical;min-height:80px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* Buttons */
+.form-btn-row{display:flex;gap:10px;margin-top:8px;}
+.form-btn-back{flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);padding:15px;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.form-btn-back:hover{border-color:var(--gold);color:var(--gold);}
+.form-btn-next,.form-btn-submit{flex:2;background:var(--gold);color:var(--navy);border:none;padding:15px;font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.form-btn-next:hover,.form-btn-submit:hover{background:var(--gold-light);}
+.form-note{font-size:11px;color:rgba(255,255,255,0.25);text-align:center;margin-top:14px;}
+
+/* Success message */
+.form-success{display:none;text-align:center;padding:40px 20px;}
+.form-success .check-icon{width:64px;height:64px;background:rgba(201,169,110,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;}
+.form-success h4{font-family:var(--serif);font-size:26px;font-weight:300;color:#fff;margin-bottom:12px;}
+.form-success p{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;}
+
+/* FINAL CTA */
+.final-cta{background:var(--navy);padding:100px 80px;text-align:center;}
+.final-cta h2{color:#fff;font-size:clamp(36px,4vw,64px);margin-bottom:16px;}
+.final-cta p{font-size:15px;color:rgba(255,255,255,0.55);margin-bottom:48px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.75;}
+.final-cta .btn-cta{display:inline-flex;align-items:center;gap:12px;background:var(--gold);color:var(--navy);border:none;padding:20px 48px;font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:background 0.2s;}
+.final-cta .btn-cta:hover{background:var(--gold-light);}
+
+/* FOOTER */
+footer{background:#111720;padding:72px 80px 36px;}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:60px;margin-bottom:60px;}
+.footer-brand .nav-logo{display:inline-block;margin-bottom:16px;}
+.footer-brand p{font-size:13px;line-height:1.75;color:rgba(255,255,255,0.4);margin-bottom:20px;max-width:280px;}
+.footer-brand a{font-size:13px;color:var(--gold);text-decoration:none;}
+.footer-col h4{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.footer-col a{font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s;}
+.footer-col a:hover{color:var(--gold);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.07);padding-top:28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.25);gap:20px;flex-wrap:wrap;}
+.footer-admin-link{font-family:var(--sans);font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.2);text-decoration:none;text-transform:uppercase;padding:6px 12px;border:1px solid rgba(255,255,255,0.08);transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.footer-admin-link:hover{color:var(--gold);border-color:rgba(201,169,110,0.3);}
+
+/* WHATSAPP */
+.whatsapp-float{position:fixed;bottom:32px;right:32px;z-index:200;width:52px;height:52px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,0.4);cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;}
+.whatsapp-float:hover{transform:scale(1.08);box-shadow:0 8px 30px rgba(37,211,102,0.5);}
+
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .nav-phone{display:none;}
+  section{padding:72px 24px;}
+  .hero{padding:0 24px 60px;}
+  .exp-header,.exp-cards,.how-header,.dest-header,.dest-grid,.manifesto-inner,.authority-grid,.testi-grid,.faq-inner,.cta-grid,.footer-top,.steps{grid-template-columns:1fr;gap:40px;}
+  .steps{grid-template-columns:1fr 1fr;}
+  .guias-grid{grid-template-columns:1fr 1fr;}
+  .trust-bar{padding:24px;gap:16px;}
+  .trust-divider{display:none;}
+  .form-card{padding:32px 22px;}
+  footer{padding:56px 24px 28px;}
+  .final-cta{padding:72px 24px;}
+  #guias{padding:80px 24px;}
+  #manifesto{padding:80px 24px;}
+  #contato{padding:80px 24px;}
+  .cart-drawer{width:100%;right:-110%;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#" class="nav-logo">Voyag<em>o</em></a>
+  <ul class="nav-links">
+    <li><a href="#experiencias">Experiências</a></li>
+    <li><a href="#guias">Guias</a></li>
+    <li><a href="#destinos">Destinos</a></li>
+    <li><a href="#como-funciona">Como funciona</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="nav-phone">+55 11 9 9999-9999</span>
+    <a href="admin-panel.html" class="nav-admin" title="Área restrita — funcionários">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Admin
+    </a>
+    <a href="#contato" class="nav-btn">Planejar Viagem</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg-img"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="eyebrow">
+      <div class="eyebrow-line"></div>
+      <span>Consultoria de Viagens de Luxo</span>
+    </div>
+    <h1>Toda grande viagem<br>começa com um<br><em>sonho.</em></h1>
+    <p>Do primeiro diálogo ao último pôr do sol, desenhamos roteiros sob medida para lua de mel e família — com a curadoria, o cuidado e os detalhes que fazem uma viagem virar memória.</p>
+    <div class="hero-ctas">
+      <a href="#contato" class="btn-primary">Começar Minha Viagem →</a>
+      <a href="#experiencias" class="btn-ghost">Explorar Experiências →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── TRUST BAR ── -->
+<div class="trust-bar">
+  <div class="trust-item">
+    <div class="trust-num">12+</div>
+    <div class="trust-label">Anos de<br>experiência</div>
+  </div>
+  <div class="trust-divider"></div>
+  <div class="trust-item">
+    <div class="trust-num">840</div>
+    <div class="trust-label">Viagens<br>realizadas</div>
+  </div>
+  <div class="trust-divider"></div>
+  <div class="trust-item">
+    <div class="trust-num">60+</div>
+    <div class="trust-label">Destinos<br>curados</div>
+  </div>
+  <div class="trust-divider"></div>
+  <div class="trust-item">
+    <div class="trust-num">98%</div>
+    <div class="trust-label">Clientes que<br>voltam</div>
+  </div>
+  <div class="trust-divider"></div>
+  <div class="trust-item" style="flex-direction:column;align-items:center;gap:4px;">
+    <div class="trust-num" style="font-size:14px;letter-spacing:0.08em;color:var(--gold);">MEMBRO VIRTUOSO</div>
+    <div class="trust-label" style="text-align:center;">Rede global de luxo</div>
+  </div>
+</div>
+
+<!-- ── EXPERIENCES ── -->
+<section id="experiencias" style="padding-bottom:80px;">
+  <div class="exp-header">
+    <div>
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span>Experiências</span>
+      </div>
+      <h2>Dois momentos,<br>a mesma <em>obsessão</em><br>por detalhes.</h2>
+    </div>
+    <p>Seja o início de uma vida a dois ou a viagem que a família inteira vai lembrar para sempre — tratamos cada roteiro como único.</p>
+  </div>
+  <div class="exp-cards">
+    <div class="exp-card">
+      <div class="exp-card-img">
+        <div class="exp-card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1540202404-a2f29016b523?w=900&q=85');"></div>
+        <div class="exp-card-overlay"></div>
+        <div class="exp-card-num">— 01</div>
+        <div class="exp-card-tag">Lua de Mel</div>
+      </div>
+      <div class="exp-card-body">
+        <h3>Para <em>dois.</em></h3>
+        <p>Praias privativas, suítes com vista, jantares à luz de velas e aqueles detalhes que você nem sabia que precisava. Desenhamos o começo perfeito da sua vida a dois.</p>
+        <a href="#contato" class="link-arrow">Ver Experiências de Lua de Mel →</a>
+      </div>
+    </div>
+    <div class="exp-card">
+      <div class="exp-card-img">
+        <div class="exp-card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=900&q=85');"></div>
+        <div class="exp-card-overlay"></div>
+        <div class="exp-card-num">— 02</div>
+        <div class="exp-card-tag">Família</div>
+      </div>
+      <div class="exp-card-body">
+        <h3>Para <em>todos.</em></h3>
+        <p>Conforto para os adultos, magia para as crianças, logística invisível para você. Viagens em família que unem gerações com aventuras na medida certa.</p>
+        <a href="#contato" class="link-arrow">Ver Experiências em Família →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="como-funciona">
+  <div class="how-header">
+    <div>
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span>Como Funciona</span>
+      </div>
+      <h2>Do primeiro contato ao<br><em>sonho</em> realizado.</h2>
+    </div>
+    <p>Um processo pensado para eliminar o estresse de planejar e preservar apenas o prazer de viver a viagem.</p>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-num">01</div><h3>Conversa inicial</h3><p>Um WhatsApp, uma ligação ou um café. Você conta o que imagina — sem formulário longo, sem compromisso.</p></div>
+    <div class="step"><div class="step-num">02</div><h3>Proposta sob medida</h3><p>Em até 48h você recebe um roteiro desenhado para você: hotéis, rotas, experiências e valores detalhados.</p></div>
+    <div class="step"><div class="step-num">03</div><h3>Ajuste fino</h3><p>Refinamos cada detalhe juntos até o roteiro ficar exatamente como você sonhou. Só então você confirma.</p></div>
+    <div class="step"><div class="step-num">04</div><h3>Viaje em paz</h3><p>Durante toda a viagem, sua consultora está a um clique de distância. Qualquer coisa, resolvemos na hora.</p></div>
+  </div>
+</section>
+
+<!-- ── DESTINATIONS ── -->
+<section id="destinos">
+  <div class="dest-header">
+    <div>
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span>Destinos em Destaque</span>
+      </div>
+      <h2>Onde <em>começamos</em><br>a sua história.</h2>
+    </div>
+    <p>De ilhas privativas a cidades históricas — uma seleção curada pelos destinos que nossos clientes mais amaram em 2026.</p>
+  </div>
+  <div class="dest-grid">
+    <div class="dest-card">
+      <div class="dest-card-img">
+        <div class="dest-card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=85');"></div>
+      </div>
+      <div class="dest-card-body"><span class="dest-card-name">Maldivas</span><span class="dest-card-region">Oceano Índico</span></div>
+    </div>
+    <div class="dest-card">
+      <div class="dest-card-img">
+        <div class="dest-card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&q=85');"></div>
+      </div>
+      <div class="dest-card-body"><span class="dest-card-name">Santorini</span><span class="dest-card-region">Grécia</span></div>
+    </div>
+    <div class="dest-card">
+      <div class="dest-card-img">
+        <div class="dest-card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=85');"></div>
+      </div>
+      <div class="dest-card-body"><span class="dest-card-name">Paris</span><span class="dest-card-region">França</span></div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:56px;">
+    <a href="#contato" class="btn-primary" style="background:var(--navy);color:#fff;">Ver Todos os Destinos →</a>
+  </div>
+</section>
+
+<!-- ── GUIAS ONLINE ── -->
+<section id="guias">
+  <div class="section-label">
+    <div class="section-label-line"></div>
+    <span>Guias Essenciais</span>
+  </div>
+  <div class="guias-header">
+    <h2>Descubra o Mundo com<br>os Nossos <em>Guias</em></h2>
+    <button class="cart-btn" onclick="toggleCart()" aria-label="Carrinho">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="cart-badge" id="cart-count">0</span>
+    </button>
+  </div>
+  <div class="guias-filters">
+    <button class="filter-btn active" onclick="filterGuias('todos',this)">Todos</button>
+    <button class="filter-btn" onclick="filterGuias('europa',this)">Europa</button>
+    <button class="filter-btn" onclick="filterGuias('asia',this)">Ásia</button>
+    <button class="filter-btn" onclick="filterGuias('america',this)">América</button>
+    <button class="filter-btn" onclick="filterGuias('oceania',this)">Oceania</button>
+    <button class="filter-btn" onclick="filterGuias('africa',this)">África</button>
+  </div>
+  <div class="guias-grid" id="guias-grid"></div>
+</section>
+
+<!-- ── MANIFESTO ── -->
+<section id="manifesto">
+  <div class="manifesto-inner">
+    <div>
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span>Manifesto</span>
+      </div>
+    </div>
+    <div>
+      <p class="manifesto-quote">Acreditamos que uma viagem de luxo não está nos cinco estrelas — está nos detalhes que só quem conhece o destino sabe sugerir. A mesa reservada no lugar certo, a ilha privativa no momento certo, a manhã em que você encontra o mundo <em>só para você.</em></p>
+      <div class="manifesto-sig">
+        <strong>Carla Mendonça</strong>
+        <span>Fundadora, Voyago</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AUTHORITY ── -->
+<section id="sobre">
+  <div class="authority-grid">
+    <div class="authority-photo">
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=85" alt="Consultora de viagens" loading="lazy">
+    </div>
+    <div class="authority-content">
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span>Conheça sua Travel Designer</span>
+      </div>
+      <h2>Uma viagem<br>não cabe em um<br><em>formulário.</em></h2>
+      <p>Há 12 anos desenho viagens para casais e famílias que buscam algo além do roteiro turístico. Cada cliente é único — e é por isso que não trabalhamos com pacotes.</p>
+      <div class="authority-blockquote">
+        <p>"A melhor viagem é aquela que parece ter sido desenhada só para você. Porque foi."</p>
+      </div>
+      <div class="authority-sig">Carla Mendonça — Fundadora &amp; Travel Designer</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section id="depoimentos">
+  <div class="testi-header">
+    <div class="section-label" style="justify-content:center;">
+      <div class="section-label-line"></div>
+      <span>Histórias de quem viajou conosco</span>
+    </div>
+    <h2>Experiências que <em>ficam</em> para<br>sempre.</h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-mark">"</div>
+      <p class="testi-text">Nossa lua de mel nas Maldivas foi mais do que imaginamos. Cada detalhe, do traslado ao jantar privativo na praia, foi perfeito. A Carla antecipou coisas que a gente nem sabia que queria.</p>
+      <div class="testi-person">
+        <div class="testi-avatar"><img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&q=80" alt="Ana Paula"></div>
+        <div><div class="testi-name">Ana Paula &amp; Rafael</div><div class="testi-trip">Lua de mel, Maldivas · Jan 2026</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-mark">"</div>
+      <p class="testi-text">Viajar com duas crianças pequenas parecia impossível. A Voyago transformou a logística em algo leve — pudemos só curtir. As crianças ainda falam da viagem todo dia.</p>
+      <div class="testi-person">
+        <div class="testi-avatar"><img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=100&q=80" alt="Família Costa"></div>
+        <div><div class="testi-name">Família Costa</div><div class="testi-trip">Férias em família, Bali · Jul 2025</div></div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-mark">"</div>
+      <p class="testi-text">Atendimento impecável. Respondem em minutos, sugerem exatamente o que a gente quer e ainda surpreendem com detalhes que não pedimos. Já planejam a próxima comigo.</p>
+      <div class="testi-person">
+        <div class="testi-avatar"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80" alt="Roberto"></div>
+        <div><div class="testi-name">Roberto Almeida</div><div class="testi-trip">Aniversário, Toscana · Set 2025</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="faq-inner">
+    <div>
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span>Perguntas Frequentes</span>
+      </div>
+      <h2>Tudo o que você<br><em>precisa</em> saber.</h2>
+    </div>
+    <div class="faq-list" id="faq-list">
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">A consultoria é cobrada separadamente?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner">Não. Nossos honorários são incluídos na viagem — você paga apenas pelos serviços que contratar (hotéis, voos, experiências). Não cobramos taxa de consultoria.</div></div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Qual é o ticket médio de uma viagem?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner">Cada viagem é única. Trabalhamos com roteiros a partir de R$ 15.000 por pessoa, com foco em experiências de alto padrão. O mais importante é entender o que você imagina — e daí construímos o melhor caminho.</div></div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Vocês atendem em qualquer destino?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner">Sim. Temos parceiros em mais de 60 países e acesso à rede Virtuoso, que nos permite oferecer benefícios exclusivos em hotéis selecionados ao redor do mundo.</div></div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Em quanto tempo recebo a proposta?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner">Em até 48 horas úteis após nossa conversa inicial. A proposta já inclui hotéis, roteiro diário, experiências sugeridas e valores aproximados.</div></div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">E se eu precisar de suporte durante a viagem?<span class="faq-icon">+</span></button><div class="faq-a"><div class="faq-a-inner">Nossa equipe está disponível 24/7 durante todo o período da sua viagem. Qualquer imprevisto — mudança de voo, problema no hotel, ajuste de agenda — resolvemos em tempo real.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 2-STEP CONTACT FORM ── -->
+<section id="contato">
+  <div class="cta-grid">
+    <div class="cta-left">
+      <div class="section-label">
+        <div class="section-label-line"></div>
+        <span>Vamos começar?</span>
+      </div>
+      <h2>Seu próximo <em>capítulo</em> começa com uma conversa.</h2>
+      <p>Preencha em 2 passos rápidos e receba uma proposta personalizada e sem compromisso em até 48 horas.</p>
+      <ul class="cta-benefits">
+        <li data-num="i.">Proposta personalizada em até 48h úteis</li>
+        <li data-num="ii.">Consultora dedicada do primeiro contato ao pós-viagem</li>
+        <li data-num="iii.">Sem taxas de consultoria — você paga apenas a viagem</li>
+        <li data-num="iv.">Suporte 24/7 durante todo o período da viagem</li>
+      </ul>
+    </div>
+
+    <!-- FORM CARD -->
+    <div>
+      <div class="form-card">
+        <div class="form-header">
+          <div class="form-section-label">Peça o seu orçamento</div>
+          <h3>Comece a Planear a Sua <em>Próxima Aventura</em></h3>
+          <p class="form-subtitle">Preencha em 2 passos rápidos e receba uma proposta personalizada e sem compromisso em até 24 horas.</p>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="form-progress" id="form-progress">
+          <div class="progress-track">
+            <div class="progress-seg active" id="prog-1"></div>
+            <div class="progress-seg" id="prog-2"></div>
+          </div>
+          <div class="progress-label" id="prog-label">PASSO 1/2</div>
+        </div>
+
+        <!-- STEP 1: CONTACTS -->
+        <div class="form-step active" id="step-1">
+          <div class="form-step-title">Os seus contactos</div>
+          <div class="form-group">
+            <label>Nome completo</label>
+            <input type="text" id="f-nome" placeholder="Como podemos te chamar?" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="f-email" placeholder="seu@email.com" required>
+          </div>
+          <div class="form-group">
+            <label>Telefone / WhatsApp</label>
+            <input type="tel" id="f-tel" placeholder="+55 11 9 0000-0000">
+          </div>
+          <div class="form-btn-row">
+            <button class="form-btn-next" onclick="goStep2()" style="flex:1;">Continuar →</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: TRIP DETAILS -->
+        <div class="form-step" id="step-2">
+          <div class="form-step-title">Sobre a sua viagem</div>
+          <div class="form-group">
+            <label>Destino de interesse</label>
+            <input type="text" id="f-destino" placeholder="Ex: Japão, Dubai, Maldivas...">
+          </div>
+          <div class="form-group">
+            <label>Tipo de viagem</label>
+            <select id="f-tipo">
+              <option value="" disabled selected>Tipo de viagem</option>
+              <option>Lua de mel</option>
+              <option>Férias em família</option>
+              <option>Ocasião especial</option>
+              <option>Safári</option>
+              <option>Viagem a dois</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Orçamento estimado (R$)</label>
+              <input type="text" id="f-budget" placeholder="Orçamento estimado">
+            </div>
+            <div class="form-group">
+              <label>Quando pretende viajar?</label>
+              <input type="date" id="f-data">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descreva seu sonho (opcional)</label>
+            <textarea id="f-sonho" placeholder="Praia paradisíaca, cidade histórica, aventura..."></textarea>
+          </div>
+          <div class="form-btn-row">
+            <button class="form-btn-back" onclick="goStep1()">← Voltar</button>
+            <button class="form-btn-submit" onclick="submitForm()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              Pedir Orçamento
+            </button>
+          </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="form-success" id="form-success">
+          <div class="check-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h4>Proposta a caminho!</h4>
+          <p>Recebemos o seu pedido. Em até 48 horas úteis entraremos em contacto com uma proposta desenhada só para si.</p>
+          <p style="margin-top:12px;">Enquanto isso, explore os nossos <a href="#guias" style="color:var(--gold);">guias de destinos</a>.</p>
+        </div>
+
+        <p class="form-note" id="form-note-text">Seus dados estão seguros. Não compartilhamos com terceiros.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FINAL CTA ── -->
+<div class="final-cta">
+  <h2>Pronta para <em>começar?</em></h2>
+  <p>A viagem dos seus sonhos começa com uma conversa de cinco minutos.</p>
+  <a href="#contato" class="btn-cta">Planejar Minha Viagem →</a>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo">Voyag<em>o</em></a>
+      <p>Consultoria de viagens de luxo para quem busca mais que um destino — busca uma experiência desenhada sob medida.</p>
+      <a href="mailto:contato@voyago.com.br">contato@voyago.com.br</a>
+    </div>
+    <div class="footer-col">
+      <h4>Experiências</h4>
+      <ul>
+        <li><a href="#contato">Lua de mel</a></li>
+        <li><a href="#contato">Família</a></li>
+        <li><a href="#guias">Guias digitais</a></li>
+        <li><a href="#contato">Safáris</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Sobre</h4>
+      <ul>
+        <li><a href="#sobre">Quem somos</a></li>
+        <li><a href="#como-funciona">Como funciona</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contato</h4>
+      <ul>
+        <li><a href="https://wa.me/5511999999999">WhatsApp</a></li>
+        <li><a href="#">+55 11 9 9999-9999</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">LinkedIn</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Voyago Consultoria de Viagens · CNPJ 00.000.000/0001-00</span>
+    <span>Membro Virtuoso · Travel Designer desde 2014</span>
+    <a href="admin-panel.html" class="footer-admin-link">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Acesso Admin
+    </a>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/5511999999999" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24" fill="white" width="26" height="26"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.11.549 4.09 1.508 5.814L0 24l6.335-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818c-1.845 0-3.575-.487-5.074-1.339l-.364-.217-3.761.982 1.003-3.66-.238-.374A9.822 9.822 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/></svg>
+</a>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer-header">
+    <h3>Meu Carrinho</h3>
+    <button class="cart-close" onclick="toggleCart()">×</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <div class="cart-empty">O seu carrinho está vazio.</div>
+  </div>
+  <div class="cart-footer" id="cart-footer" style="display:none;">
+    <div class="cart-total">
+      <span>Total</span>
+      <strong id="cart-total-val">€0,00</strong>
+    </div>
+    <button class="cart-checkout" onclick="cartCheckout()">Finalizar Compra →</button>
+  </div>
+</div>
+
+
+<script>
+// ── GUIAS DATA ──
+const guias = [
+  {id:1, name:'Lisboa', country:'Portugal', region:'europa', badge:'Bestseller', price:19.90, img:'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=400&q=80'},
+  {id:2, name:'Paris', country:'França', region:'europa', badge:'Popular', price:24.90, img:'https://images.unsplash.com/photo-1431274172761-fcdab704a698?w=400&q=80'},
+  {id:3, name:'Roma', country:'Itália', region:'europa', badge:'Novo', price:22.90, img:'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80'},
+  {id:4, name:'Barcelona', country:'Espanha', region:'europa', badge:'Popular', price:21.90, img:'https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=400&q=80'},
+  {id:5, name:'Dubai', country:'EAU', region:'asia', badge:'Premium', price:27.90, img:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400&q=80'},
+  {id:6, name:'Tóquio', country:'Japão', region:'asia', badge:'Premium', price:29.90, img:'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&q=80'},
+  {id:7, name:'Nova Iorque', country:'EUA', region:'america', badge:'Bestseller', price:24.90, img:'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&q=80'},
+  {id:8, name:'Santorini', country:'Grécia', region:'europa', badge:'Novo', price:22.90, img:'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80'},
+  {id:9, name:'Bali', country:'Indonésia', region:'asia', badge:'Popular', price:19.90, img:'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&q=80'},
+  {id:10, name:'Marrocos', country:'África do Norte', region:'africa', badge:'Novo', price:21.90, img:'https://images.unsplash.com/photo-1597212720158-08a5e1e5d88d?w=400&q=80'},
+  {id:11, name:'Sydney', country:'Austrália', region:'oceania', badge:'Premium', price:26.90, img:'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=400&q=80'},
+  {id:12, name:'Rio de Janeiro', country:'Brasil', region:'america', badge:'Bestseller', price:17.90, img:'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=400&q=80'},
+];
+
+let cart = [];
+let currentFilter = 'todos';
+
+function renderGuias(filter) {
+  const grid = document.getElementById('guias-grid');
+  const filtered = filter === 'todos' ? guias : guias.filter(g => g.region === filter);
+  grid.innerHTML = filtered.map(g => {
+    const inCart = cart.find(c => c.id === g.id);
+    return `<div class="guia-card" data-region="${g.region}">
+      <div class="guia-img">
+        <img src="${g.img}" alt="${g.name}" loading="lazy">
+        <span class="guia-badge">${g.badge}</span>
+      </div>
+      <div class="guia-body">
+        <div class="guia-name">${g.name}</div>
+        <div class="guia-country">${g.country}</div>
+        <div class="guia-footer">
+          <span class="guia-price">€${g.price.toFixed(2).replace('.',',')}</span>
+          <button class="guia-add ${inCart?'added':''}" onclick="addToCart(${g.id})" id="btn-${g.id}">
+            ${inCart ? '✓ Adicionado' : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Adicionar`}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterGuias(region, btn) {
+  currentFilter = region;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGuias(region);
+}
+
+function addToCart(id) {
+  const guia = guias.find(g => g.id === id);
+  if (!cart.find(c => c.id === id)) {
+    cart.push(guia);
+    updateCart();
+    renderGuias(currentFilter);
+  }
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  updateCart();
+  renderGuias(currentFilter);
+}
+
+function updateCart() {
+  const count = document.getElementById('cart-count');
+  count.textContent = cart.length;
+  const itemsEl = document.getElementById('cart-items');
+  const footer = document.getElementById('cart-footer');
+  if (cart.length === 0) {
+    itemsEl.innerHTML = '<div class="cart-empty">O seu carrinho está vazio.</div>';
+    footer.style.display = 'none';
+  } else {
+    itemsEl.innerHTML = cart.map(g => `
+      <div class="cart-item">
+        <img class="cart-item-img" src="${g.img}" alt="${g.name}">
+        <div class="cart-item-info">
+          <div class="cart-item-name">${g.name}</div>
+          <div class="cart-item-country">${g.country}</div>
+          <div class="cart-item-price">€${g.price.toFixed(2).replace('.',',')}</div>
+        </div>
+        <button class="cart-remove" onclick="removeFromCart(${g.id})" title="Remover">×</button>
+      </div>`).join('');
+    const total = cart.reduce((s, g) => s + g.price, 0);
+    document.getElementById('cart-total-val').textContent = `€${total.toFixed(2).replace('.',',')}`;
+    footer.style.display = 'block';
+  }
+}
+
+function toggleCart() {
+  document.getElementById('cart-drawer').classList.toggle('open');
+  document.getElementById('cart-overlay').classList.toggle('open');
+}
+
+function cartCheckout() {
+  alert('Redirecionar para pagamento — integrar com gateway de pagamento.');
+}
+
+// ── 2-STEP FORM ──
+function goStep2() {
+  const nome = document.getElementById('f-nome').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  if (!nome || !email) {
+    document.getElementById('f-nome').style.borderColor = nome ? 'rgba(255,255,255,0.1)' : '#e74c3c';
+    document.getElementById('f-email').style.borderColor = email ? 'rgba(255,255,255,0.1)' : '#e74c3c';
+    return;
+  }
+  document.getElementById('step-1').classList.remove('active');
+  document.getElementById('step-2').classList.add('active');
+  document.getElementById('prog-2').classList.add('active');
+  document.getElementById('prog-label').textContent = 'PASSO 2/2';
+}
+
+function goStep1() {
+  document.getElementById('step-2').classList.remove('active');
+  document.getElementById('step-1').classList.add('active');
+  document.getElementById('prog-2').classList.remove('active');
+  document.getElementById('prog-label').textContent = 'PASSO 1/2';
+}
+
+function submitForm() {
+  const nome = document.getElementById('f-nome').value;
+  const email = document.getElementById('f-email').value;
+  const tel = document.getElementById('f-tel').value;
+  const destino = document.getElementById('f-destino').value;
+  const tipo = document.getElementById('f-tipo').value;
+  const budget = document.getElementById('f-budget').value;
+  const sonho = document.getElementById('f-sonho').value;
+
+  // Lead qualificada (tem destino + tipo + budget) → WhatsApp
+  // Lead não qualificada (só nome + email) → email marketing (simulated)
+  const isQualified = destino && tipo && budget;
+
+  if (isQualified) {
+    const msg = encodeURIComponent(`Olá! Me chamo ${nome}.\n\nDestino: ${destino}\nTipo: ${tipo}\nOrçamento: ${budget}\n${sonho ? 'Sonho: ' + sonho : ''}\n\nGostaria de receber uma proposta personalizada.`);
+    window.open('https://wa.me/5511999999999?text=' + msg, '_blank');
+  }
+
+  // Always show success
+  document.getElementById('step-2').classList.remove('active');
+  document.getElementById('form-progress').style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+  document.getElementById('form-note-text').style.display = 'none';
+}
+
+// ── FAQ ──
+function toggleFaq(btn) {
+  const answer = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.faq-q.open').forEach(b => {
+    b.classList.remove('open');
+    b.nextElementSibling.style.maxHeight = '0';
+  });
+  if (!isOpen) {
+    btn.classList.add('open');
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+  }
+}
+
+// Init
+renderGuias('todos');
+</script>
+</body>
+</html>
